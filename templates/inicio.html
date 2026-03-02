@@ -1,0 +1,329 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="{% static 'css/estilosC.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/inicio.css' %}" />
+    <title>Dashboard - Coordinador | SecureSab</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="user-info">
+            <div class="header-right">
+                <div id="notifWidget">
+                    <i class="fas fa-bell"></i>
+                    <span class="notif-badge">3</span>
+                </div>
+                <div class="header-divider"></div>
+                <div class="user-menu-container">
+                    <div class="user-menu" id="userMenuBtn">
+                        <i class="fas fa-user-circle user-photo"></i>
+                        <span class="user-name">Juan Coordinador</span>
+                        <i class="fas fa-chevron-down" style="font-size: 0.7rem; color: #94a3b8;"></i>
+                    </div>
+                    <div class="user-dropdown" id="userDropdown">
+                        <a href="{% url 'reporte_monitoreo:mi_perfil' %}"><i class="fas fa-user"></i> Ver Perfil</a>
+                        <a href="{% url 'landing' %}" class="logout-item"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2>Bienvenido<br>Coordinador</h2>
+            <button class="sidebar-toggle" id="sidebarToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        <nav>
+            <ul id="menu">
+                <li><a href="{% url 'reporte_monitoreo:inicio' %}" class="active"><i class="fas fa-home"></i> <span>Inicio</span></a></li>
+                <li><a href="{% url 'reporte_monitoreo:asistencia_ambiente' %}"><i class="fas fa-chalkboard"></i> <span>Asistencia Ambiente</span></a></li>
+                <li><a href="{% url 'reporte_monitoreo:asistencia_sede' %}"><i class="fas fa-building"></i> <span>Asistencia Sede</span></a></li>
+                <li><a href="{% url 'reporte_monitoreo:crear_novedad' %}"><i class="fas fa-plus-circle"></i> <span>Crear Novedad</span></a></li>
+                <li><a href="{% url 'reporte_monitoreo:justificaciones' %}"><i class="fas fa-file-alt"></i> <span>Justificaciones</span></a></li>
+                <li><a href="{% url 'reporte_monitoreo:mi_perfil' %}"><i class="fas fa-user"></i> <span>Mi Perfil</span></a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Contenido principal -->
+    <main class="main-content-wrapper">
+        <div class="dashboard-container">
+            
+            <!-- Header de bienvenida -->
+            <div class="dash-header">
+                <div class="dash-welcome">
+                    <div class="dash-welcome-text">
+                        <h1>¡Bienvenido, Juan! 👋</h1>
+                        <p>Aquí tienes el resumen de tu centro de formación</p>
+                    </div>
+                    <div class="dash-welcome-date">
+                        <div class="date-day">21</div>
+                        <div class="date-month">Febrero 2026</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- KPI Cards -->
+            <div class="dash-kpi-grid">
+                <div class="dash-kpi-card fichas">
+                    <div class="dash-kpi-icon">
+                        <i class="fas fa-folder-open"></i>
+                    </div>
+                    <div class="dash-kpi-info">
+                        <span class="dash-kpi-value" id="totalFichas">12</span>
+                        <span class="dash-kpi-label">Fichas Activas</span>
+                        <span class="dash-kpi-trend up">
+                            <i class="fas fa-arrow-up"></i> 2 nuevas este mes
+                        </span>
+                    </div>
+                </div>
+                <div class="dash-kpi-card aprendices">
+                    <div class="dash-kpi-icon">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
+                    <div class="dash-kpi-info">
+                        <span class="dash-kpi-value" id="totalAprendices">245</span>
+                        <span class="dash-kpi-label">Total Aprendices</span>
+                        <span class="dash-kpi-trend up">
+                            <i class="fas fa-arrow-up"></i> +12 este mes
+                        </span>
+                    </div>
+                </div>
+                <div class="dash-kpi-card presentes">
+                    <div class="dash-kpi-icon">
+                        <i class="fas fa-user-check"></i>
+                    </div>
+                    <div class="dash-kpi-info">
+                        <span class="dash-kpi-value" id="presentesSedeHoy">198</span>
+                        <span class="dash-kpi-label">Presentes Hoy</span>
+                        <span class="dash-kpi-trend up">
+                            <i class="fas fa-check"></i> 80.8% asistencia
+                        </span>
+                    </div>
+                </div>
+                <div class="dash-kpi-card justificaciones">
+                    <div class="dash-kpi-icon">
+                        <i class="fas fa-file-signature"></i>
+                    </div>
+                    <div class="dash-kpi-info">
+                        <span class="dash-kpi-value" id="justPendientes">8</span>
+                        <span class="dash-kpi-label">Justificaciones Pendientes</span>
+                        <span class="dash-kpi-trend down">
+                            <i class="fas fa-clock"></i> Requieren atención
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gráficos -->
+            <div class="dash-charts-section">
+                <div class="dash-chart-card">
+                    <div class="dash-chart-header">
+                        <h3><i class="fas fa-chart-bar"></i> Asistencia Semanal</h3>
+                    </div>
+                    <div class="dash-chart-body">
+                        <canvas id="asistenciasChart"></canvas>
+                    </div>
+                </div>
+                <div class="dash-chart-card">
+                    <div class="dash-chart-header">
+                        <h3><i class="fas fa-chart-pie"></i> Estado de Novedades</h3>
+                    </div>
+                    <div class="dash-chart-body">
+                        <canvas id="novedadesChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Acciones Rápidas y Actividad Reciente -->
+            <div class="dash-quick-section">
+                <div class="dash-quick-card">
+                    <div class="dash-quick-header">
+                        <h3><i class="fas fa-bolt"></i> Acciones Rápidas</h3>
+                    </div>
+                    <div class="dash-quick-body">
+                        <div class="dash-actions-grid">
+                            <a href="asistencia-ambiente.html" class="dash-action-btn">
+                                <i class="fas fa-clipboard-check"></i>
+                                <span>Ver Asistencia</span>
+                            </a>
+                            <a href="crear-novedad.html" class="dash-action-btn">
+                                <i class="fas fa-plus-circle"></i>
+                                <span>Nueva Novedad</span>
+                            </a>
+                            <a href="justificaciones.html" class="dash-action-btn">
+                                <i class="fas fa-file-alt"></i>
+                                <span>Justificaciones</span>
+                            </a>
+                            <a href="mi-perfil.html" class="dash-action-btn">
+                                <i class="fas fa-user-cog"></i>
+                                <span>Mi Perfil</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="dash-quick-card">
+                    <div class="dash-quick-header">
+                        <h3><i class="fas fa-history"></i> Actividad Reciente</h3>
+                        <a href="#">Ver todo</a>
+                    </div>
+                    <div class="dash-quick-body">
+                        <ul class="dash-activity-list">
+                            <li class="dash-activity-item">
+                                <div class="dash-activity-icon success">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <div class="dash-activity-content">
+                                    <p class="dash-activity-text">Justificación aprobada - María García</p>
+                                    <span class="dash-activity-time">Hace 15 minutos</span>
+                                </div>
+                            </li>
+                            <li class="dash-activity-item">
+                                <div class="dash-activity-icon warning">
+                                    <i class="fas fa-exclamation"></i>
+                                </div>
+                                <div class="dash-activity-content">
+                                    <p class="dash-activity-text">Nueva novedad urgente registrada</p>
+                                    <span class="dash-activity-time">Hace 1 hora</span>
+                                </div>
+                            </li>
+                            <li class="dash-activity-item">
+                                <div class="dash-activity-icon info">
+                                    <i class="fas fa-user-plus"></i>
+                                </div>
+                                <div class="dash-activity-content">
+                                    <p class="dash-activity-text">3 nuevos aprendices registrados</p>
+                                    <span class="dash-activity-time">Hace 2 horas</span>
+                                </div>
+                            </li>
+                            <li class="dash-activity-item">
+                                <div class="dash-activity-icon danger">
+                                    <i class="fas fa-user-times"></i>
+                                </div>
+                                <div class="dash-activity-content">
+                                    <p class="dash-activity-text">5 ausencias reportadas - Ficha 2654123</p>
+                                    <span class="dash-activity-time">Hace 3 horas</span>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="{% static 'js/LogicaC.js' %}"></script>
+    <script>
+        // Inicializar sidebar toggle
+        initSidebarToggle();
+
+        // Gráfico de Asistencia Semanal
+        const ctxAsistencia = document.getElementById('asistenciasChart').getContext('2d');
+        new Chart(ctxAsistencia, {
+            type: 'bar',
+            data: {
+                labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie'],
+                datasets: [
+                    {
+                        label: 'Presentes',
+                        data: [190, 185, 195, 198, 192],
+                        backgroundColor: 'rgba(16, 185, 129, 0.8)',
+                        borderRadius: 6
+                    },
+                    {
+                        label: 'Ausentes',
+                        data: [25, 30, 20, 22, 28],
+                        backgroundColor: 'rgba(239, 68, 68, 0.8)',
+                        borderRadius: 6
+                    },
+                    {
+                        label: 'Tardanzas',
+                        data: [30, 30, 30, 25, 25],
+                        backgroundColor: 'rgba(245, 158, 11, 0.8)',
+                        borderRadius: 6
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(0,0,0,0.05)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+
+        // Gráfico de Novedades
+        const ctxNovedades = document.getElementById('novedadesChart').getContext('2d');
+        new Chart(ctxNovedades, {
+            type: 'doughnut',
+            data: {
+                labels: ['Pendientes', 'En Proceso', 'Resueltas'],
+                datasets: [{
+                    data: [5, 3, 12],
+                    backgroundColor: [
+                        'rgba(245, 158, 11, 0.9)',
+                        'rgba(59, 130, 246, 0.9)',
+                        'rgba(16, 185, 129, 0.9)'
+                    ],
+                    borderWidth: 0,
+                    cutout: '70%'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+
+        // User Dropdown
+        const userMenuBtn = document.getElementById('userMenuBtn');
+        const userDropdown = document.getElementById('userDropdown');
+        
+        userMenuBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            userMenuBtn.classList.toggle('active');
+            userDropdown.classList.toggle('active');
+        });
+        
+        document.addEventListener('click', function(e) {
+            if (!userMenuBtn.contains(e.target) && !userDropdown.contains(e.target)) {
+                userMenuBtn.classList.remove('active');
+                userDropdown.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,313 @@
+/* ==========================================
+   Asistencia Ambiente - Estilos específicos
+   ========================================== */
+
+/* Contenedor principal centrado */
+.ambiente-content {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+/* Header de página */
+.page-header {
+    margin-bottom: 28px;
+}
+
+.page-header h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.page-header h1 i {
+    color: var(--main-green);
+    font-size: 1.5rem;
+}
+
+/* Contenedor de filtros */
+.filters-card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 32px;
+    margin-bottom: 28px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    border: 1px solid #e2e8f0;
+}
+
+/* Grid de filtros - 2 columnas simétricas */
+.filters-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px 40px;
+}
+
+/* Botones de filtros */
+.filters-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 16px;
+    margin-top: 28px;
+    padding-top: 24px;
+    border-top: 1px solid #f1f5f9;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-width: 0;
+}
+
+.filter-group label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #475569;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.filter-group label i {
+    color: var(--main-green);
+    font-size: 0.75rem;
+}
+
+.filter-group select,
+.filter-group input {
+    width: 100%;
+    padding: 14px 18px;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    color: #334155;
+    background: #f8fafc;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+    min-height: 50px;
+}
+
+.filter-group select:focus,
+.filter-group input:focus {
+    outline: none;
+    border-color: var(--main-green);
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(0, 100, 0, 0.1);
+}
+
+.filter-group input::placeholder {
+    color: #94a3b8;
+}
+
+.btn-filter {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    white-space: nowrap;
+    color: #fff;
+}
+
+.btn-filter.secondary {
+    background: #f1f5f9;
+    color: #475569;
+    border: 2px solid #e2e8f0;
+}
+
+.btn-filter.secondary:hover {
+    background: #e2e8f0;
+    border-color: #cbd5e1;
+}
+
+.btn-filter.primary {
+    background: linear-gradient(135deg, var(--main-green), #007a00);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(0, 100, 0, 0.25);
+}
+
+.btn-filter.primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 100, 0, 0.35);
+}
+
+/* Contenedor de tabla */
+.table-card {
+    background: #ffffff;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    border: 1px solid #e2e8f0;
+}
+
+.table-scroll {
+    overflow-x: auto;
+}
+
+/* Tabla mejorada */
+.ambiente-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.ambiente-table thead {
+    background: linear-gradient(135deg, var(--main-green), #007a00);
+}
+
+.ambiente-table thead th {
+    padding: 16px 20px;
+    text-align: left;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+
+.ambiente-table thead th i {
+    margin-right: 8px;
+    opacity: 0.8;
+}
+
+.ambiente-table tbody tr {
+    transition: all 0.2s ease;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.ambiente-table tbody tr:hover {
+    background: #f8fafc;
+}
+
+.ambiente-table tbody td {
+    padding: 16px 20px;
+    color: #334155;
+    font-size: 0.9rem;
+}
+
+/* Celda de aprendiz con avatar */
+.aprendiz-name {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.aprendiz-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--main-green), #007a00);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.aprendiz-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.aprendiz-info span {
+    font-weight: 500;
+    color: #1e293b;
+}
+
+/* Badge de ficha */
+.ficha-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 14px;
+    background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+    color: #1d4ed8;
+    border-radius: 20px;
+    font-size: 0.82rem;
+    font-weight: 600;
+}
+
+.ficha-badge.na {
+    background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+    color: #64748b;
+}
+
+/* Celda de fecha */
+.date-cell {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #64748b;
+    font-size: 0.88rem;
+}
+
+.date-cell i {
+    color: var(--main-green);
+    font-size: 0.8rem;
+}
+
+/* Badge de estado */
+.estado-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-size: 0.82rem;
+    font-weight: 600;
+}
+
+.estado-badge.asistio {
+    background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+    color: #047857;
+}
+
+.estado-badge.inasistio {
+    background: linear-gradient(135deg, #fee2e2, #fecaca);
+    color: #dc2626;
+}
+
+.estado-badge i {
+    font-size: 0.75rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .ambiente-content {
+        padding: 0 16px;
+    }
+    
+    .filters-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    
+    .filters-buttons {
+        flex-direction: column;
+    }
+    
+    .btn-filter {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .ambiente-table thead th,
+    .ambiente-table tbody td {
+        padding: 12px 14px;
+    }
+    
+    .aprendiz-avatar {
+        display: none;
+    }
+}

@@ -1,0 +1,285 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- Fuentes e íconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    
+    <!-- Estilos -->
+    <link rel="stylesheet" href="{% static 'css/estilosC.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/justificaciones.css' %}" />
+    
+    <title>Justificaciones - Coordinador | SecureSab</title>
+</head>
+<body>
+    <!-- ===== Navbar ===== -->
+    <nav class="navbar">
+        <div class="user-info">
+            <div class="header-right">
+                <div id="notifWidget">
+                    <i class="fas fa-bell"></i>
+                    <span class="notif-badge">3</span>
+                </div>
+                <div class="header-divider"></div>
+                <div class="user-menu-container">
+                    <div class="user-menu" id="userMenuBtn">
+                        <i class="fas fa-user-circle user-photo"></i>
+                        <span class="user-name">Juan Coordinador</span>
+                        <i class="fas fa-chevron-down" style="font-size: 0.7rem; color: #94a3b8;"></i>
+                    </div>
+                    <div class="user-dropdown" id="userDropdown">
+                        <a href="{% url 'reporte_monitoreo:mi_perfil' %}"><i class="fas fa-user"></i> Ver Perfil</a>
+                        <a href="{% url 'landing' %}" class="logout-item"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ===== Sidebar ===== -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2>Bienvenido<br>Coordinador</h2>
+            <button class="sidebar-toggle" id="sidebarToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        <nav>
+            <ul id="menu">
+                <li><a href="{% url 'reporte_monitoreo:inicio' %}"><i class="fas fa-home"></i> <span>Inicio</span></a></li>
+                <li><a href="{% url 'reporte_monitoreo:asistencia_ambiente' %}"><i class="fas fa-chalkboard"></i> <span>Asistencia Ambiente</span></a></li>
+                <li><a href="{% url 'reporte_monitoreo:asistencia_sede' %}"><i class="fas fa-building"></i> <span>Asistencia Sede</span></a></li>
+                <li><a href="{% url 'reporte_monitoreo:crear_novedad' %}"><i class="fas fa-plus-circle"></i> <span>Crear Novedad</span></a></li>
+                <li><a href="{% url 'reporte_monitoreo:justificaciones' %}" class="active"><i class="fas fa-file-alt"></i> <span>Justificaciones</span></a></li>
+                <li><a href="{% url 'reporte_monitoreo:mi_perfil' %}"><i class="fas fa-user"></i> <span>Mi Perfil</span></a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- ===== Contenido Principal ===== -->
+    <main class="main-content-wrapper">
+        <div class="justificaciones-container">
+            
+            <!-- Header -->
+            <div class="just-header">
+                <div class="just-header-text">
+                    <h2><i class="fas fa-file-alt"></i> Gestión de Justificaciones</h2>
+                    <p>Revisa, aprueba o rechaza las justificaciones de los aprendices</p>
+                </div>
+                <div class="just-header-actions">
+                    <button class="btn-export" onclick="exportarCSV()">
+                        <i class="fas fa-download"></i> Exportar CSV
+                    </button>
+                </div>
+            </div>
+
+            <!-- KPI Cards -->
+            <div class="just-kpi-grid">
+                <div class="just-kpi-card total">
+                    <div class="just-kpi-icon">
+                        <i class="fas fa-clipboard-list"></i>
+                    </div>
+                    <div class="just-kpi-info">
+                        <span class="just-kpi-value" id="kpiTotal">0</span>
+                        <span class="just-kpi-label">Total Justificaciones</span>
+                    </div>
+                    <span class="just-kpi-trend up">
+                        <i class="fas fa-arrow-up"></i> 12%
+                    </span>
+                </div>
+                <div class="just-kpi-card pendiente">
+                    <div class="just-kpi-icon">
+                        <i class="fas fa-hourglass-half"></i>
+                    </div>
+                    <div class="just-kpi-info">
+                        <span class="just-kpi-value" id="kpiPendientes">0</span>
+                        <span class="just-kpi-label">Pendientes</span>
+                    </div>
+                    <span class="just-kpi-trend down">
+                        <i class="fas fa-arrow-down"></i> 5%
+                    </span>
+                </div>
+                <div class="just-kpi-card aprobada">
+                    <div class="just-kpi-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="just-kpi-info">
+                        <span class="just-kpi-value" id="kpiAprobadas">0</span>
+                        <span class="just-kpi-label">Aprobadas</span>
+                    </div>
+                    <span class="just-kpi-trend up">
+                        <i class="fas fa-arrow-up"></i> 8%
+                    </span>
+                </div>
+                <div class="just-kpi-card rechazada">
+                    <div class="just-kpi-icon">
+                        <i class="fas fa-times-circle"></i>
+                    </div>
+                    <div class="just-kpi-info">
+                        <span class="just-kpi-value" id="kpiRechazadas">0</span>
+                        <span class="just-kpi-label">Rechazadas</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filtros y Búsqueda -->
+            <div class="just-filters-container">
+                <div class="just-filters-row">
+                    <div class="just-search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" 
+                               id="justSearchInput" 
+                               placeholder="Buscar por nombre, documento o motivo...">
+                    </div>
+                    <div class="just-filter-chips">
+                        <button class="just-chip active" data-estado="all">
+                            <i class="fas fa-list"></i> Todos
+                            <span class="chip-count">0</span>
+                        </button>
+                        <button class="just-chip" data-estado="Pendiente">
+                            <i class="fas fa-clock"></i> Pendientes
+                            <span class="chip-count">0</span>
+                        </button>
+                        <button class="just-chip" data-estado="Aprobada">
+                            <i class="fas fa-check"></i> Aprobadas
+                            <span class="chip-count">0</span>
+                        </button>
+                        <button class="just-chip" data-estado="Rechazada">
+                            <i class="fas fa-times"></i> Rechazadas
+                            <span class="chip-count">0</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabla de Justificaciones -->
+            <div class="just-table-container">
+                <div class="just-table-header">
+                    <h3><i class="fas fa-table"></i> Listado de Justificaciones</h3>
+                </div>
+                <div class="just-table-wrapper">
+                    <table class="just-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Aprendiz</th>
+                                <th>Motivo</th>
+                                <th>Soporte</th>
+                                <th>Fecha</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="justTablaBody">
+                            <!-- Contenido dinámico por JS -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="just-pagination">
+                    <span class="just-pagination-info" id="paginacionInfo">
+                        Mostrando 0 de 0 justificaciones
+                    </span>
+                    <div class="just-pagination-controls">
+                        <button class="just-page-btn" disabled>
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <button class="just-page-btn active">1</button>
+                        <button class="just-page-btn">2</button>
+                        <button class="just-page-btn">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- ===== Modal de Detalle ===== -->
+    <div id="justModal" class="just-modal">
+        <div class="just-modal-content">
+            <div class="just-modal-header">
+                <h3><i class="fas fa-file-alt"></i> Detalle de Justificación</h3>
+                <button class="just-modal-close" id="justModalClose">&times;</button>
+            </div>
+            <div class="just-modal-body">
+                <div class="just-detail-grid">
+                    <div class="just-detail-item">
+                        <div class="just-detail-label">
+                            <i class="fas fa-user"></i> Aprendiz
+                        </div>
+                        <div class="just-detail-value" id="modalAprendiz">-</div>
+                    </div>
+                    <div class="just-detail-item">
+                        <div class="just-detail-label">
+                            <i class="fas fa-id-card"></i> Documento
+                        </div>
+                        <div class="just-detail-value" id="modalDocumento">-</div>
+                    </div>
+                    <div class="just-detail-item">
+                        <div class="just-detail-label">
+                            <i class="fas fa-folder"></i> Ficha
+                        </div>
+                        <div class="just-detail-value" id="modalFicha">-</div>
+                    </div>
+                    <div class="just-detail-item">
+                        <div class="just-detail-label">
+                            <i class="fas fa-calendar"></i> Fecha
+                        </div>
+                        <div class="just-detail-value" id="modalFecha">-</div>
+                    </div>
+                    <div class="just-detail-item">
+                        <div class="just-detail-label">
+                            <i class="fas fa-comment-alt"></i> Motivo
+                        </div>
+                        <div class="just-detail-value" id="modalMotivo">-</div>
+                    </div>
+                    <div class="just-detail-item">
+                        <div class="just-detail-label">
+                            <i class="fas fa-info-circle"></i> Estado
+                        </div>
+                        <div class="just-detail-value" id="modalEstado">-</div>
+                    </div>
+                    <div class="just-detail-item full-width">
+                        <div class="just-detail-label">
+                            <i class="fas fa-clipboard"></i> Observaciones
+                        </div>
+                        <div class="just-detail-value" id="modalObservaciones">-</div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="just-modal-footer">
+                <button class="just-modal-btn secondary" id="justModalCancel">
+                    <i class="fas fa-times"></i> Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== Scripts ===== -->
+    <script src="{% static 'js/LogicaC.js' %}"></script>
+    <script src="{% static 'js/justificaciones.js' %}"></script>
+    <script>
+        // User Dropdown
+        const userMenuBtn = document.getElementById('userMenuBtn');
+        const userDropdown = document.getElementById('userDropdown');
+        
+        userMenuBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            userMenuBtn.classList.toggle('active');
+            userDropdown.classList.toggle('active');
+        });
+        
+        document.addEventListener('click', function(e) {
+            if (!userMenuBtn.contains(e.target) && !userDropdown.contains(e.target)) {
+                userMenuBtn.classList.remove('active');
+                userDropdown.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>
