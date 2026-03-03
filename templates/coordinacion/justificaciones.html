@@ -9,8 +9,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     
     <!-- Estilos -->
-    <link rel="stylesheet" href="{% static 'css/estilosC.css' %}" />
-    <link rel="stylesheet" href="{% static 'css/justificaciones.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/Coordinador.css/estilosC.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/Coordinador.css/justificaciones.css' %}" />
     
     <title>Justificaciones - Coordinador | SecureSab</title>
 </head>
@@ -32,7 +32,7 @@
                     </div>
                     <div class="user-dropdown" id="userDropdown">
                         <a href="{% url 'reporte_monitoreo:mi_perfil' %}"><i class="fas fa-user"></i> Ver Perfil</a>
-                        <a href="{% url 'landing' %}" class="logout-item"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a>
+                        <a href="{% url 'reporte_monitoreo:landing' %}" class="logout-item"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a>
                     </div>
                 </div>
             </div>
@@ -261,8 +261,8 @@
     </div>
 
     <!-- ===== Scripts ===== -->
-    <script src="{% static 'js/LogicaC.js' %}"></script>
-    <script src="{% static 'js/justificaciones.js' %}"></script>
+    <script src="{% static 'js/Coordinador.js/LogicaC.js' %}"></script>
+    <script src="{% static 'js/Coordinador.js/justificaciones.js' %}"></script>
     <script>
         // User Dropdown
         const userMenuBtn = document.getElementById('userMenuBtn');

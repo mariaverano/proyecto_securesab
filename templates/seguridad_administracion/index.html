@@ -1,0 +1,126 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ modulo }} - SecureSab</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+        }
+        .container {
+            text-align: center;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            max-width: 600px;
+            margin: 20px;
+        }
+        .icon {
+            font-size: 80px;
+            color: #e91e63;
+            margin-bottom: 20px;
+        }
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: #e91e63;
+        }
+        .descripcion {
+            font-size: 1.2rem;
+            color: #ccc;
+            margin-bottom: 30px;
+        }
+        .status {
+            background: rgba(255, 193, 7, 0.2);
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .status i {
+            color: #ffc107;
+            margin-right: 10px;
+        }
+        .todo-list {
+            text-align: left;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+        }
+        .todo-list h3 {
+            color: #e91e63;
+            margin-bottom: 15px;
+        }
+        .todo-list ul {
+            list-style: none;
+        }
+        .todo-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .todo-list li:last-child {
+            border-bottom: none;
+        }
+        .todo-list li i {
+            margin-right: 10px;
+            color: #6c757d;
+        }
+        .back-link {
+            margin-top: 30px;
+        }
+        .back-link a {
+            color: #e91e63;
+            text-decoration: none;
+            font-size: 1rem;
+        }
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">
+            <i class="fas fa-shield-alt"></i>
+        </div>
+        <h1>{{ modulo }}</h1>
+        <p class="descripcion">{{ descripcion }}</p>
+        
+        <div class="status">
+            <i class="fas fa-hard-hat"></i>
+            <strong>Módulo en Construcción</strong>
+        </div>
+        
+        <div class="todo-list">
+            <h3><i class="fas fa-tasks"></i> Funcionalidades a Implementar:</h3>
+            <ul>
+                <li><i class="far fa-square"></i> Gestión de usuarios</li>
+                <li><i class="far fa-square"></i> Roles y permisos</li>
+                <li><i class="far fa-square"></i> Auditoría del sistema</li>
+                <li><i class="far fa-square"></i> Configuración de sedes</li>
+                <li><i class="far fa-square"></i> Configuración de ambientes</li>
+                <li><i class="far fa-square"></i> Backup y recuperación</li>
+            </ul>
+        </div>
+        
+        <div class="back-link">
+            <a href="{% url 'reporte_monitoreo:landing' %}"><i class="fas fa-arrow-left"></i> Volver al inicio</a>
+        </div>
+    </div>
+</body>
+</html>
