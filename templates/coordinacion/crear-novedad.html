@@ -9,8 +9,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     
     <!-- Estilos -->
-    <link rel="stylesheet" href="{% static 'css/estilosC.css' %}" />
-    <link rel="stylesheet" href="{% static 'css/crear-novedad.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/Coordinador.css/estilosC.css' %}?v=2" />
+    <link rel="stylesheet" href="{% static 'css/Coordinador.css/crear-novedad.css' %}?v=2" />
     
     <title>Crear Novedad - Coordinador | SecureSab</title>
 </head>
@@ -32,7 +32,7 @@
                     </div>
                     <div class="user-dropdown" id="userDropdown">
                         <a href="{% url 'reporte_monitoreo:mi_perfil' %}"><i class="fas fa-user"></i> Ver Perfil</a>
-                        <a href="{% url 'landing' %}" class="logout-item"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a>
+                        <a href="{% url 'reporte_monitoreo:landing' %}" class="logout-item"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a>
                     </div>
                 </div>
             </div>
@@ -162,8 +162,10 @@
                                 <th>Ficha</th>
                                 <th>Título</th>
                                 <th>Descripción</th>
+                                <th>Respuesta</th>
                                 <th>Instructor</th>
                                 <th>Estado</th>
+                                <th>Adjunto</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
@@ -249,6 +251,10 @@
                             <textarea name="descripcion" required placeholder="Descripción detallada de la novedad..."></textarea>
                         </div>
                         <div class="nov-form-group full-width">
+                            <label><i class="fas fa-reply"></i> Respuesta</label>
+                            <textarea name="respuesta" placeholder="Respuesta o seguimiento de la novedad (opcional)..." rows="3"></textarea>
+                        </div>
+                        <div class="nov-form-group full-width">
                             <label><i class="fas fa-paperclip"></i> Archivo adjunto</label>
                             <div class="nov-file-input">
                                 <input type="file" name="archivo" id="archivoInput">
@@ -273,8 +279,8 @@
     </div>
 
     <!-- ===== Scripts ===== -->
-    <script src="{% static 'js/LogicaC.js' %}"></script>
-    <script src="{% static 'js/crear-novedad.js' %}"></script>
+    <script src="{% static 'js/Coordinador.js/LogicaC.js' %}?v=3"></script>
+    <script src="{% static 'js/Coordinador.js/crear-novedad.js' %}?v=3"></script>
     <script>
         // User Dropdown
         const userMenuBtn = document.getElementById('userMenuBtn');

@@ -13,6 +13,7 @@ let novedadesData = [
         ficha: '2654123',
         titulo: 'Falla en equipos de cómputo',
         descripcion: 'Los computadores del ambiente 301 presentan fallas al encender. Se requiere revisión técnica urgente.',
+        respuesta: 'Se programó revisión técnica para el día 23',
         instructor: 'Carlos Pérez',
         tipo: 'Urgente',
         estado: 'Pendiente',
@@ -24,6 +25,7 @@ let novedadesData = [
         ficha: '2654124',
         titulo: 'Cambio de horario solicitado',
         descripcion: 'El grupo solicita cambio de jornada de mañana a tarde por motivos de transporte.',
+        respuesta: null,
         instructor: 'María López',
         tipo: 'Aviso',
         estado: 'En proceso',
@@ -35,6 +37,7 @@ let novedadesData = [
         ficha: '2654125',
         titulo: 'Inasistencia masiva por paro',
         descripcion: 'Grupo completo no pudo asistir debido al paro de transporte en la zona norte.',
+        respuesta: 'Justificación aprobada por coordinación',
         instructor: 'Juan García',
         tipo: 'Incidencia',
         estado: 'Resuelto',
@@ -46,6 +49,7 @@ let novedadesData = [
         ficha: '2654123',
         titulo: 'Proyector dañado',
         descripcion: 'El proyector del ambiente presenta imagen borrosa y no proyecta correctamente.',
+        respuesta: null,
         instructor: 'Carlos Pérez',
         tipo: 'Incidencia',
         estado: 'Pendiente',
@@ -57,6 +61,7 @@ let novedadesData = [
         ficha: '2654126',
         titulo: 'Conflicto entre aprendices',
         descripcion: 'Se presentó un altercado verbal entre dos aprendices durante la formación.',
+        respuesta: 'Caso remitido a bienestar al aprendiz',
         instructor: 'Ana Martínez',
         tipo: 'Urgente',
         estado: 'En proceso',
@@ -68,6 +73,7 @@ let novedadesData = [
         ficha: '2654127',
         titulo: 'Solicitud de materiales',
         descripcion: 'Se requieren materiales adicionales para el proyecto final del trimestre.',
+        respuesta: 'Materiales entregados el 18/02',
         instructor: 'Pedro Sánchez',
         tipo: 'Aviso',
         estado: 'Resuelto',
@@ -143,7 +149,7 @@ function renderTabla(datos = novedadesData) {
     if (datos.length === 0) {
         tbody.innerHTML = `
             <tr>
-                <td colspan="7">
+                <td colspan="9">
                     <div class="nov-empty-state">
                         <i class="fas fa-inbox"></i>
                         <h4>No hay novedades</h4>
@@ -166,9 +172,21 @@ function renderTabla(datos = novedadesData) {
                 </div>
             </td>
             <td class="nov-descripcion-cell">${truncarTexto(novedad.descripcion, 50)}</td>
+            <td class="nov-respuesta-cell">
+                ${novedad.respuesta 
+                    ? `<span class="nov-respuesta-text">${truncarTexto(novedad.respuesta, 40)}</span>` 
+                    : `<span class="nov-sin-respuesta">Sin respuesta</span>`
+                }
+            </td>
             <td>${novedad.instructor}</td>
             <td>
                 <span class="nov-estado ${getEstadoClass(novedad.estado)}">${novedad.estado}</span>
+            </td>
+            <td class="nov-adjunto-cell">
+                ${novedad.archivo 
+                    ? `<a href="#" class="nov-adjunto-link" title="${novedad.archivo}"><i class="fas fa-paperclip"></i> ${getFileIcon(novedad.archivo)}</a>` 
+                    : `<span class="nov-sin-adjunto">-</span>`
+                }
             </td>
             <td>
                 <div class="nov-acciones">
@@ -196,6 +214,22 @@ function getEstadoClass(estado) {
         'Resuelto': 'resuelto'
     };
     return clases[estado] || '';
+}
+
+function getFileIcon(archivo) {
+    if (!archivo) return '';
+    const ext = archivo.split('.').pop().toLowerCase();
+    const iconos = {
+        'pdf': '<i class="fas fa-file-pdf" style="color: #ef4444;"></i>',
+        'doc': '<i class="fas fa-file-word" style="color: #3b82f6;"></i>',
+        'docx': '<i class="fas fa-file-word" style="color: #3b82f6;"></i>',
+        'xls': '<i class="fas fa-file-excel" style="color: #10b981;"></i>',
+        'xlsx': '<i class="fas fa-file-excel" style="color: #10b981;"></i>',
+        'jpg': '<i class="fas fa-file-image" style="color: #8b5cf6;"></i>',
+        'jpeg': '<i class="fas fa-file-image" style="color: #8b5cf6;"></i>',
+        'png': '<i class="fas fa-file-image" style="color: #8b5cf6;"></i>'
+    };
+    return iconos[ext] || '<i class="fas fa-file"></i>';
 }
 
 function formatearFecha(fecha) {
@@ -280,6 +314,7 @@ function initModal() {
     const btnCerrar = document.getElementById('novModalClose');
     const btnCancelar = document.getElementById('novModalCancel');
     const form = document.getElementById('formNovedad');
+    const archivoInput = document.getElementById('archivoInput');
 
     if (btnNueva) {
         btnNueva.addEventListener('click', () => abrirModalNueva());
@@ -302,6 +337,22 @@ function initModal() {
     if (form) {
         form.addEventListener('submit', guardarNovedad);
     }
+    
+    // Mostrar nombre del archivo seleccionado
+    if (archivoInput) {
+        archivoInput.addEventListener('change', function() {
+            const fileLabel = document.querySelector('.nov-file-label span');
+            if (fileLabel) {
+                if (this.files && this.files.length > 0) {
+                    fileLabel.textContent = this.files[0].name;
+                    fileLabel.style.color = '#10b981';
+                } else {
+                    fileLabel.textContent = 'Arrastra o haz clic para adjuntar archivo';
+                    fileLabel.style.color = '';
+                }
+            }
+        });
+    }
 
     // Cerrar con Escape
     document.addEventListener('keydown', (e) => {
@@ -319,6 +370,14 @@ function abrirModalNueva() {
     
     if (titulo) titulo.textContent = 'Nueva Novedad';
     if (form) form.reset();
+    
+    // Resetear label del archivo
+    const fileLabel = document.querySelector('.nov-file-label span');
+    if (fileLabel) {
+        fileLabel.textContent = 'Arrastra o haz clic para adjuntar archivo';
+        fileLabel.style.color = '';
+    }
+    
     if (modal) modal.classList.add('active');
 }
 
@@ -369,6 +428,18 @@ function llenarFormulario(novedad) {
     form.querySelector('[name="descripcion"]').value = novedad.descripcion;
     form.querySelector('[name="tipo"]').value = novedad.tipo;
     form.querySelector('[name="estado"]').value = novedad.estado;
+    
+    // Llenar respuesta si existe
+    const respuestaField = form.querySelector('[name="respuesta"]');
+    if (respuestaField) {
+        respuestaField.value = novedad.respuesta || '';
+    }
+    
+    // Mostrar nombre del archivo si existe
+    const fileLabel = form.querySelector('.nov-file-label span');
+    if (fileLabel && novedad.archivo) {
+        fileLabel.textContent = novedad.archivo;
+    }
 }
 
 function deshabilitarFormulario(disabled) {
@@ -401,6 +472,18 @@ function guardarNovedad(e) {
     e.preventDefault();
 
     const form = e.target;
+    
+    // Obtener archivo adjunto
+    const archivoInput = form.querySelector('[name="archivo"]');
+    let archivoNombre = null;
+    if (archivoInput && archivoInput.files && archivoInput.files.length > 0) {
+        archivoNombre = archivoInput.files[0].name;
+    }
+    
+    // Obtener respuesta
+    const respuestaField = form.querySelector('[name="respuesta"]');
+    const respuesta = respuestaField ? respuestaField.value.trim() : null;
+    
     const datos = {
         ficha: form.querySelector('[name="ficha"]').value,
         instructor: form.querySelector('[name="instructor"]').value,
@@ -408,13 +491,22 @@ function guardarNovedad(e) {
         descripcion: form.querySelector('[name="descripcion"]').value,
         tipo: form.querySelector('[name="tipo"]').value,
         estado: form.querySelector('[name="estado"]').value,
+        respuesta: respuesta || null,
         fecha: new Date().toISOString().split('T')[0]
     };
+    
+    // Agregar archivo si se seleccionó uno nuevo
+    if (archivoNombre) {
+        datos.archivo = archivoNombre;
+    }
 
     if (modoEdicion && novedadSeleccionada) {
-        // Actualizar existente
+        // Actualizar existente - mantener archivo anterior si no se subió uno nuevo
         const index = novedadesData.findIndex(n => n.id === novedadSeleccionada.id);
         if (index !== -1) {
+            if (!archivoNombre) {
+                datos.archivo = novedadesData[index].archivo;
+            }
             novedadesData[index] = { ...novedadesData[index], ...datos };
             mostrarToast('success', 'Novedad actualizada', 'Los cambios se guardaron correctamente');
         }
@@ -423,7 +515,7 @@ function guardarNovedad(e) {
         const nuevaNovedad = {
             id: Math.max(...novedadesData.map(n => n.id)) + 1,
             ...datos,
-            archivo: null
+            archivo: archivoNombre
         };
         novedadesData.unshift(nuevaNovedad);
         mostrarToast('success', 'Novedad creada', 'La novedad se registró correctamente');

@@ -1,0 +1,264 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="{% static 'css/Coordinador.css/estilosC.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/Coordinador.css/asistencia-sede.css' %}" />
+    <title>Asistencia Sede - Coordinador | SecureSab</title>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="user-info">
+            <div class="header-right">
+                <div id="notifWidget">
+                    <i class="fas fa-bell"></i>
+                    <span class="notif-badge">3</span>
+                </div>
+                <div class="header-divider"></div>
+                <div class="user-menu-container">
+                    <div class="user-menu" id="userMenuBtn">
+                        <i class="fas fa-user-circle user-photo"></i>
+                        <span class="user-name">Juan Coordinador</span>
+                        <i class="fas fa-chevron-down" style="font-size: 0.7rem; color: #94a3b8;"></i>
+                    </div>
+                    <div class="user-dropdown" id="userDropdown">
+                        <a href="{% url 'reporte_monitoreo:mi_perfil' %}"><i class="fas fa-user"></i> Ver Perfil</a>
+                        <a href="{% url 'reporte_monitoreo:landing' %}" class="logout-item"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2>Bienvenido<br>Coordinador</h2>
+            <button class="sidebar-toggle" id="sidebarToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        <nav>
+            <ul id="menu">
+                <li><a href="{% url 'reporte_monitoreo:inicio' %}"><i class="fas fa-home"></i> <span>Inicio</span></a></li>
+                <li><a href="{% url 'reporte_monitoreo:asistencia_ambiente' %}"><i class="fas fa-chalkboard"></i> <span>Asistencia Ambiente</span></a></li>
+                <li><a href="{% url 'reporte_monitoreo:asistencia_sede' %}" class="active"><i class="fas fa-building"></i> <span>Asistencia Sede</span></a></li>
+                <li><a href="{% url 'reporte_monitoreo:crear_novedad' %}"><i class="fas fa-plus-circle"></i> <span>Crear Novedad</span></a></li>
+                <li><a href="{% url 'reporte_monitoreo:justificaciones' %}"><i class="fas fa-file-alt"></i> <span>Justificaciones</span></a></li>
+                <li><a href="{% url 'reporte_monitoreo:mi_perfil' %}"><i class="fas fa-user"></i> <span>Mi Perfil</span></a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Contenido principal -->
+    <main class="main-content-wrapper">
+        <div class="sede-content">
+        
+        <!-- Header de página -->
+        <div class="page-header">
+            <h1><i class="fas fa-building"></i> Asistencia en Sede</h1>
+        </div>
+
+        <!-- Card de Filtros -->
+        <div class="filters-card">
+            <div class="filters-grid">
+                <!-- Fila 1 -->
+                <div class="filter-group">
+                    <label><i class="fas fa-folder"></i> Filtrar por Ficha:</label>
+                    <select id="asistenciaSedeFicha">
+                        <option value="all">Todas las Fichas</option>
+                        <option value="3065834">3065834</option>
+                        <option value="2654123">2654123</option>
+                        <option value="2654124">2654124</option>
+                        <option value="2654125">2654125</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label><i class="fas fa-search"></i> Documento/Nombre:</label>
+                    <input type="text" id="asistenciaSedeDocumento" placeholder="Buscar por documento o nombre">
+                </div>
+                <!-- Fila 2 -->
+                <div class="filter-group">
+                    <label><i class="fas fa-calendar-alt"></i> Fecha:</label>
+                    <input type="date" id="fechaFiltro">
+                </div>
+                <div class="filter-group">
+                    <label><i class="fas fa-sign-in-alt"></i> Hora Entrada:</label>
+                    <input type="time" id="horaEntrada">
+                </div>
+                <!-- Fila 3 -->
+                <div class="filter-group">
+                    <label><i class="fas fa-sign-out-alt"></i> Hora Salida:</label>
+                    <input type="time" id="horaSalida">
+                </div>
+            </div>
+            <!-- Botones -->
+            <div class="filters-buttons">
+                <button id="clearFiltersBtn" class="btn-filter" style="background: #64748b;">
+                    <i class="fas fa-times"></i> Limpiar
+                </button>
+                <button id="applySedeFiltersBtn" class="btn-filter secondary">
+                    <i class="fas fa-filter"></i> Aplicar filtros
+                </button>
+                <button id="exportSedeBtn" class="btn-filter primary">
+                    <i class="fas fa-file-csv"></i> Exportar CSV
+                </button>
+            </div>
+        </div>
+
+        <!-- Card de Tabla -->
+        <div class="table-card">
+            <div class="table-scroll">
+                <table class="sede-table">
+                    <thead>
+                        <tr>
+                            <th><i class="fas fa-id-card"></i> Documento</th>
+                            <th><i class="fas fa-user"></i> Nombre Aprendiz</th>
+                            <th><i class="fas fa-folder-open"></i> Ficha</th>
+                            <th><i class="fas fa-calendar"></i> Fecha</th>
+                            <th><i class="fas fa-sign-in-alt"></i> Hora Entrada</th>
+                            <th><i class="fas fa-sign-out-alt"></i> Hora Salida</th>
+                        </tr>
+                    </thead>
+                    <tbody id="asistenciaSedeTabla">
+                        <tr>
+                            <td>1000856944</td>
+                            <td>
+                                <div class="aprendiz-name">
+                                    <div class="aprendiz-avatar">JF</div>
+                                    <div class="aprendiz-info">
+                                        <span>Juan Felipe Reinoso Caballero</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><span class="ficha-badge">3065834</span></td>
+                            <td><span class="date-cell"><i class="fas fa-calendar-day"></i> 2025-09-02</span></td>
+                            <td><span class="time-badge entrada"><i class="fas fa-arrow-right"></i> 08:10</span></td>
+                            <td><span class="time-badge salida"><i class="fas fa-arrow-left"></i> 12:08</span></td>
+                        </tr>
+                        <tr>
+                            <td>1000856944</td>
+                            <td>
+                                <div class="aprendiz-name">
+                                    <div class="aprendiz-avatar">JF</div>
+                                    <div class="aprendiz-info">
+                                        <span>Juan Felipe Reinoso Caballero</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><span class="ficha-badge">3065834</span></td>
+                            <td><span class="date-cell"><i class="fas fa-calendar-day"></i> 2025-09-01</span></td>
+                            <td><span class="time-badge entrada"><i class="fas fa-arrow-right"></i> 07:55</span></td>
+                            <td><span class="time-badge salida"><i class="fas fa-arrow-left"></i> 12:00</span></td>
+                        </tr>
+                        <tr>
+                            <td>1000856966</td>
+                            <td>
+                                <div class="aprendiz-name">
+                                    <div class="aprendiz-avatar">JP</div>
+                                    <div class="aprendiz-info">
+                                        <span>Jose Paez</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><span class="ficha-badge na">N/D</span></td>
+                            <td><span class="date-cell"><i class="fas fa-calendar-day"></i> 2025-09-01</span></td>
+                            <td><span class="time-badge entrada"><i class="fas fa-arrow-right"></i> 08:20</span></td>
+                            <td><span class="time-badge salida"><i class="fas fa-arrow-left"></i> 12:15</span></td>
+                        </tr>
+                        <tr>
+                            <td>1000856999</td>
+                            <td>
+                                <div class="aprendiz-name">
+                                    <div class="aprendiz-avatar">CS</div>
+                                    <div class="aprendiz-info">
+                                        <span>Carlos Sánchez</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><span class="ficha-badge na">N/D</span></td>
+                            <td><span class="date-cell"><i class="fas fa-calendar-day"></i> 2025-09-21</span></td>
+                            <td><span class="time-badge entrada"><i class="fas fa-arrow-right"></i> 02:02:13</span></td>
+                            <td><span class="time-badge pending"><i class="fas fa-clock"></i> --:--</span></td>
+                        </tr>
+                        <tr>
+                            <td>1000856999</td>
+                            <td>
+                                <div class="aprendiz-name">
+                                    <div class="aprendiz-avatar">CS</div>
+                                    <div class="aprendiz-info">
+                                        <span>Carlos Sánchez</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><span class="ficha-badge na">N/D</span></td>
+                            <td><span class="date-cell"><i class="fas fa-calendar-day"></i> 2025-09-21</span></td>
+                            <td><span class="time-badge entrada"><i class="fas fa-arrow-right"></i> 02:05:46</span></td>
+                            <td><span class="time-badge salida"><i class="fas fa-arrow-left"></i> 03:57:14</span></td>
+                        </tr>
+                        <tr>
+                            <td>1000856999</td>
+                            <td>
+                                <div class="aprendiz-name">
+                                    <div class="aprendiz-avatar">CS</div>
+                                    <div class="aprendiz-info">
+                                        <span>Carlos Sánchez</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><span class="ficha-badge na">N/D</span></td>
+                            <td><span class="date-cell"><i class="fas fa-calendar-day"></i> 2025-09-21</span></td>
+                            <td><span class="time-badge entrada"><i class="fas fa-arrow-right"></i> 02:06:04</span></td>
+                            <td><span class="time-badge salida"><i class="fas fa-arrow-left"></i> 02:06:17</span></td>
+                        </tr>
+                        <tr>
+                            <td>1000856999</td>
+                            <td>
+                                <div class="aprendiz-name">
+                                    <div class="aprendiz-avatar">CS</div>
+                                    <div class="aprendiz-info">
+                                        <span>Carlos Sánchez</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><span class="ficha-badge na">N/D</span></td>
+                            <td><span class="date-cell"><i class="fas fa-calendar-day"></i> 2025-09-21</span></td>
+                            <td><span class="time-badge entrada"><i class="fas fa-arrow-right"></i> 04:04:11</span></td>
+                            <td><span class="time-badge salida"><i class="fas fa-arrow-left"></i> 23:15:39</span></td>
+                        </tr>
+                        <tr>
+                            <td>1000856999</td>
+                            <td>
+                                <div class="aprendiz-name">
+                                    <div class="aprendiz-avatar">CS</div>
+                                    <div class="aprendiz-info">
+                                        <span>Carlos Sánchez</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><span class="ficha-badge na">N/D</span></td>
+                            <td><span class="date-cell"><i class="fas fa-calendar-day"></i> 2025-09-20</span></td>
+                            <td><span class="time-badge entrada"><i class="fas fa-arrow-right"></i> 23:17:28</span></td>
+                            <td><span class="time-badge salida"><i class="fas fa-arrow-left"></i> 23:18:40</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        </div><!-- /.sede-content -->
+    </main>
+
+    <!-- Scripts -->
+    <script src="{% static 'js/Coordinador.js/LogicaC.js' %}"></script>
+    <script src="{% static 'js/asistencia-sede.js' %}"></script>
+    <script>
+        initSidebarToggle();
+        initUserDropdown();
+    </script>
+</body>
+</html>

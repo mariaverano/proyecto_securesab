@@ -411,6 +411,62 @@
     color: var(--novedad-text-light);
 }
 
+/* ===== Columna Respuesta ===== */
+.nov-respuesta-cell {
+    max-width: 200px;
+}
+
+.nov-respuesta-text {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--novedad-text);
+    line-height: 1.4;
+}
+
+.nov-sin-respuesta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.75rem;
+    background: rgba(148, 163, 184, 0.15);
+    color: #94a3b8;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-style: italic;
+}
+
+/* ===== Columna Adjunto ===== */
+.nov-adjunto-cell {
+    text-align: center;
+}
+
+.nov-adjunto-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.375rem 0.75rem;
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.nov-adjunto-link:hover {
+    background: rgba(59, 130, 246, 0.2);
+    transform: translateY(-1px);
+}
+
+.nov-adjunto-link i {
+    font-size: 0.9rem;
+}
+
+.nov-sin-adjunto {
+    color: #cbd5e1;
+    font-size: 1rem;
+}
+
 /* ===== Badges de Estado ===== */
 .nov-estado {
     display: inline-flex;
@@ -630,7 +686,8 @@
     width: 100%;
     max-width: 600px;
     max-height: 90vh;
-    overflow: hidden;
+    display: flex;
+    flex-direction: column;
     box-shadow: var(--novedad-shadow-lg);
     animation: slideUp 0.3s ease;
 }
@@ -653,6 +710,7 @@
     padding: 1.25rem 1.5rem;
     background: linear-gradient(135deg, var(--novedad-primary), var(--novedad-primary-light));
     color: white;
+    flex-shrink: 0;
 }
 
 .nov-modal-header h3 {
@@ -687,7 +745,8 @@
 .nov-modal-body {
     padding: 1.5rem;
     overflow-y: auto;
-    max-height: calc(90vh - 140px);
+    flex: 1;
+    min-height: 0;
 }
 
 .nov-modal-footer {
@@ -697,6 +756,7 @@
     padding: 1rem 1.5rem;
     border-top: 1px solid var(--novedad-border);
     background: var(--novedad-bg);
+    flex-shrink: 0;
 }
 
 /* ===== Formulario ===== */

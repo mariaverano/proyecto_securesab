@@ -5,8 +5,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link rel="stylesheet" href="{% static 'css/estilosC.css' %}" />
-    <link rel="stylesheet" href="{% static 'css/inicio.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/Coordinador.css/estilosC.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/Coordinador.css/inicio.css' %}" />
     <title>Dashboard - Coordinador | SecureSab</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -28,7 +28,7 @@
                     </div>
                     <div class="user-dropdown" id="userDropdown">
                         <a href="{% url 'reporte_monitoreo:mi_perfil' %}"><i class="fas fa-user"></i> Ver Perfil</a>
-                        <a href="{% url 'landing' %}" class="logout-item"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a>
+                        <a href="{% url 'reporte_monitoreo:landing' %}" class="logout-item"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a>
                     </div>
                 </div>
             </div>
@@ -224,7 +224,7 @@
     </main>
 
     <!-- Scripts -->
-    <script src="{% static 'js/LogicaC.js' %}"></script>
+    <script src="{% static 'js/Coordinador.js/LogicaC.js' %}"></script>
     <script>
         // Inicializar sidebar toggle
         initSidebarToggle();
