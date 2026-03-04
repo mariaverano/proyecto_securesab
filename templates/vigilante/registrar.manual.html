@@ -1,0 +1,200 @@
+{% extends "layouts/mainV.html" %}
+{% load static %}
+
+{% block title %}Registro Manual de Ingreso/Salida{% endblock %}
+
+{% block extraHead %}
+    <!-- CSS adicional si quieres para esta vista -->
+    <!-- Por ejemplo:
+    <link rel="stylesheet" href="{% static 'css/registro-manual.css' %}">
+    -->
+{% endblock %}
+
+{% block content %}
+<div class="registro-manual-page">
+
+    <!-- MENSAJE DE ÉXITO -->
+    {% if success %}
+    <div class="alerta alerta-exito">
+        <i class="fa-solid fa-circle-check"></i>
+        <span>{{ success }}</span>
+    </div>
+    {% endif %}
+
+    <!-- CABECERA -->
+    <div class="rm-header">
+        <div>
+            <h2>Registro Manual de Ingreso/Salida</h2>
+            <p>Registra manualmente el ingreso o salida de una persona y revisa el historial reciente.</p>
+        </div>
+        <div class="rm-header-info">
+            <div class="rm-pill">
+                <i class="fa-solid fa-calendar-day"></i>
+                <span>{{ fechaHoy }}</span>
+            </div>
+            <div class="rm-pill">
+                <i class="fa-solid fa-clock"></i>
+                <span>{{ horaAhora }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- CARD FORMULARIO -->
+    <div class="rm-card">
+        <div class="rm-card-header">
+            <div>
+                <h3><i class="fa-solid fa-pen-to-square"></i> Nuevo movimiento</h3>
+                <p>Completa los datos del documento, tipo de movimiento y motivo.</p>
+            </div>
+        </div>
+
+        <form action="{% url 'vigilante:registro_manual' %}"
+              method="post">
+            {% csrf_token %}
+
+            <!-- CÉDULA + MOVIMIENTO -->
+            <div class="rm-row">
+                <div class="rm-field rm-field-grow">
+                    <label for="cedula">Cédula</label>
+                    <input type="text"
+                           id="cedula"
+                           class="rm-input"
+                           name="documento"
+                           value="{{ form.documento.value|default:'' }}"
+                           placeholder="Ej: 1000123456"
+                           required>
+                    {% if form.documento.errors %}
+                    <div class="error-campo">
+                        {{ form.documento.errors.0 }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="rm-field rm-field-small">
+                    <label for="tipo_movimiento">Movimiento</label>
+                    <select id="tipo_movimiento"
+                            class="rm-select"
+                            name="tipoMovimiento"
+                            required>
+                        <option value="">Seleccione...</option>
+                        <option value="Ingreso" {% if form.tipoMovimiento.value == 'Ingreso' %}selected{% endif %}>Ingreso</option>
+                        <option value="Salida" {% if form.tipoMovimiento.value == 'Salida' %}selected{% endif %}>Salida</option>
+                    </select>
+                    {% if form.tipoMovimiento.errors %}
+                    <div class="error-campo">
+                        {{ form.tipoMovimiento.errors.0 }}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- FECHA Y HORA (SOLO LECTURA) -->
+            <div class="rm-row">
+                <div class="rm-field rm-field-small">
+                    <label for="fecha">Fecha</label>
+                    <input type="date"
+                           id="fecha"
+                           class="rm-input-readonly"
+                           value="{{ fechaHoy }}"
+                           readonly>
+                </div>
+
+                <div class="rm-field rm-field-small">
+                    <label for="hora">Hora</label>
+                    <input type="time"
+                           id="hora"
+                           class="rm-input-readonly"
+                           value="{{ horaAhora }}"
+                           readonly>
+                </div>
+            </div>
+
+            <!-- MOTIVO -->
+            <div class="rm-row">
+                <div class="rm-field rm-field-grow">
+                    <label for="motivo">Motivo</label>
+                    <input type="text"
+                           id="motivo"
+                           class="rm-input"
+                           name="motivo"
+                           value="{{ form.motivo.value|default:'' }}"
+                           placeholder="Motivo del ingreso o salida (opcional)">
+                </div>
+            </div>
+
+            <!-- ACCIONES -->
+            <div class="rm-actions">
+                <button type="reset" class="btn rm-btn-secondary">
+                    <i class="fa-solid fa-eraser"></i> Limpiar
+                </button>
+                <button type="submit" class="btn primary-btn rm-btn-primary">
+                    <i class="fa-solid fa-save"></i> Registrar Movimiento
+                </button>
+            </div>
+
+        </form>
+    </div>
+
+    <!-- SEPARADOR -->
+    <hr class="rm-separator"/>
+
+    <!-- CARD HISTORIAL -->
+    <div class="rm-card rm-card-table">
+        <div class="rm-card-header">
+            <div>
+                <h3><i class="fa-solid fa-clock-rotate-left"></i> Historial de Registros Manuales</h3>
+                <p>Consulta los últimos movimientos registrados manualmente.</p>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table class="styled-table">
+                <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>Cédula</th>
+                    <th>Motivo</th>
+                    <th>Fecha</th>
+                    <th>Hora Entrada</th>
+                    <th>Hora Salida</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                {% for r in registrosList %}
+                <tr>
+                    <td>{{ r.nombre }}</td>
+                    <td>{{ r.apellido }}</td>
+                    <td>{{ r.documento }}</td>
+                    <td>{{ r.motivo|default:'-' }}</td>
+                    <td>{{ r.fecha }}</td>
+                    <td>{{ r.horaEntrada|default:'-' }}</td>
+                    <td>{% if r.horaSalida %}{{ r.horaSalida }}{% else %}---{% endif %}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="no-data">
+                        <i class="fa-solid fa-inbox" style="margin-right: 8px;"></i>
+                        No hay registros manuales aún.
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if totalPages > 1 %}
+        <div class="paginacion">
+            {% for i in pageNumbers %}
+            <a href="{% url 'vigilante:registro_manual' %}?page={{ i|add:1 }}"
+               class="{% if i == currentPage %}active{% endif %}">
+                {{ i|add:1 }}
+            </a>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}

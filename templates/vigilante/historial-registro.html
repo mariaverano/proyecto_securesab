@@ -1,0 +1,226 @@
+{% extends "layouts/mainV.html" %}
+{% load static %}
+
+{% block title %}Historial de Registros - Vigilante{% endblock %}
+
+{% block extraHead %}
+    <!-- CSS adicional si quieres -->
+{% endblock %}
+
+{% block content %}
+    <h2>Historial de Registros</h2>
+
+    <p style="margin: 15px 0; color: #666; font-size: 14px;">
+        <i class="fa-solid fa-calendar-days"></i>
+        <strong>Fecha actual:</strong>
+        <span>{{ fechaHoy }}</span>
+        &nbsp;&nbsp;|&nbsp;&nbsp;
+        <i class="fa-solid fa-clock"></i>
+        <strong>Hora actual:</strong>
+        <span>{{ horaAhora }}</span>
+    </p>
+
+    <hr style="margin: 20px 0; border: none; border-top: 1px solid #e0e0e0;">
+
+    {% if success %}
+    <div class="alerta alerta-exito">
+        <i class="fa-solid fa-circle-check"></i>
+        <span>{{ success }}</span>
+    </div>
+    {% endif %}
+
+    <!-- FILTROS -->
+    <div style="background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+                padding: 25px; border-radius: 12px; border: 2px solid #00b894;
+                box-shadow: 0 4px 12px rgba(0, 184, 148, 0.1); margin-bottom: 25px;">
+        <h3 style="margin-top: 0; margin-bottom: 20px; color: #00b894;
+                   padding-bottom: 15px; border-bottom: 3px solid #00b894;">
+            <i class="fa-solid fa-filter"></i> Filtros de Búsqueda
+        </h3>
+
+        <form action="{% url 'vigilante:historial_registro' %}" method="get"
+              style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                     gap: 15px; align-items: end;">
+
+            <div>
+                <label for="nombre"
+                       style="display: block; font-weight: 700; margin-bottom: 6px;
+                              color: #222; font-size: 13px;">Nombre o Apellido</label>
+                <input type="text" id="nombre" name="nombre"
+                       value="{{ filtroNombre }}"
+                       placeholder="Buscar por nombre..."
+                       style="width: 100%; padding: 12px 15px; border: 2px solid #e0e0e0;
+                              border-radius: 8px; font-size: 14px; transition: all 0.3s ease;">
+            </div>
+
+            <div>
+                <label for="cedula"
+                       style="display: block; font-weight: 700; margin-bottom: 6px;
+                              color: #222; font-size: 13px;">Cédula</label>
+                <input type="text" id="cedula" name="cedula"
+                       value="{{ filtroCedula }}"
+                       placeholder="Buscar por cédula..."
+                       style="width: 100%; padding: 12px 15px; border: 2px solid #e0e0e0;
+                              border-radius: 8px; font-size: 14px; transition: all 0.3s ease;">
+            </div>
+
+            <div>
+                <label for="tipo"
+                       style="display: block; font-weight: 700; margin-bottom: 6px;
+                              color: #222; font-size: 13px;">Tipo de Registro</label>
+                <select id="tipo" name="tipo"
+                        style="width: 100%; padding: 12px 15px; border: 2px solid #e0e0e0;
+                               border-radius: 8px; font-size: 14px; transition: all 0.3s ease;">
+                    <option value="">Todos</option>
+                    <option value="Visitante" {% if filtroTipo == 'Visitante' %}selected{% endif %}>Visitante</option>
+                    <option value="Manual" {% if filtroTipo == 'Manual' %}selected{% endif %}>Registro Manual</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="fechaDesde"
+                       style="display: block; font-weight: 700; margin-bottom: 6px;
+                              color: #222; font-size: 13px;">Fecha Desde</label>
+                <input type="date" id="fechaDesde" name="fechaDesde"
+                       value="{{ filtroFechaDesde }}"
+                       style="width: 100%; padding: 12px 15px; border: 2px solid #e0e0e0;
+                              border-radius: 8px; font-size: 14px; transition: all 0.3s ease;">
+            </div>
+
+            <div>
+                <label for="fechaHasta"
+                       style="display: block; font-weight: 700; margin-bottom: 6px;
+                              color: #222; font-size: 13px;">Fecha Hasta</label>
+                <input type="date" id="fechaHasta" name="fechaHasta"
+                       value="{{ filtroFechaHasta }}"
+                       style="width: 100%; padding: 12px 15px; border: 2px solid #e0e0e0;
+                              border-radius: 8px; font-size: 14px; transition: all 0.3s ease;">
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button type="submit" class="btn primary-btn" style="flex: 1;">
+                    <i class="fa-solid fa-magnifying-glass"></i> Buscar
+                </button>
+                <a href="{% url 'vigilante:historial_registro' %}"
+                   style="flex: 1;" class="btn">
+                    <i class="fa-solid fa-rotate-right"></i> Limpiar
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- TABLA UNIFICADA -->
+    {% if visitantes or registrosManual %}
+    <div>
+        <div class="table-container">
+            <table class="styled-table">
+                <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>Cédula</th>
+                    <th>Tipo</th>
+                    <th>Motivo</th>
+                    <th>Fecha</th>
+                    <th>Hora Entrada</th>
+                    <th>Hora Salida</th>
+                    <th>Estado</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!-- Visitantes -->
+                {% for v in visitantes %}
+                <tr>
+                    <td>{{ v.nombre }}</td>
+                    <td>{{ v.apellido }}</td>
+                    <td>{{ v.cedula }}</td>
+                    <td style="font-weight: bold; color: #28a745;">
+                        <i class="fa-solid fa-user-tie"></i> Visitante
+                    </td>
+                    <td>{{ v.motivo }}</td>
+                    <td>{{ v.asistenciaSede.fecha|default:'-' }}</td>
+                    <td>{{ v.asistenciaSede.horaEntrada|default:'-' }}</td>
+                    <td>{% if v.asistenciaSede and v.asistenciaSede.horaSalida %}{{ v.asistenciaSede.horaSalida }}{% else %}---{% endif %}</td>
+                    <td>
+                        {% if v.asistenciaSede and not v.asistenciaSede.horaSalida %}
+                        <span style="background-color: #28a745; color: white; padding: 5px 10px;
+                                     border-radius: 4px; display: inline-block;">
+                            <i class="fa-solid fa-arrow-right"></i> Dentro de la instalación
+                        </span>
+                        {% else %}
+                        <span style="background-color: #dc3545; color: white; padding: 5px 10px;
+                                     border-radius: 4px; display: inline-block;">
+                            <i class="fa-solid fa-arrow-left"></i> Fuera de la instalación
+                        </span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+
+                <!-- Registros Manuales -->
+                {% for r in registrosManual %}
+                <tr>
+                    <td>{{ r.nombre }}</td>
+                    <td>{{ r.apellido }}</td>
+                    <td>{{ r.documento }}</td>
+                    <td style="font-weight: bold; color: #007bff;">
+                        <i class="fa-solid fa-users"></i> Registro Manual
+                    </td>
+                    <td>{{ r.motivo|default:'-' }}</td>
+                    <td>{{ r.fecha }}</td>
+                    <td>{{ r.horaEntrada|default:'-' }}</td>
+                    <td>{{ r.horaSalida|default:'-' }}</td>
+                    <td>
+                        {% if r.tipoMovimiento == 'Completo' and r.horaSalida %}
+                        <span style="background-color: #dc3545; color: white; padding: 5px 10px;
+                                     border-radius: 4px; display: inline-block;">
+                            <i class="fa-solid fa-arrow-left"></i> Fuera de la instalación
+                        </span>
+                        {% elif r.tipoMovimiento == 'Completo' and not r.horaSalida %}
+                        <span style="background-color: #28a745; color: white; padding: 5px 10px;
+                                     border-radius: 4px; display: inline-block;">
+                            <i class="fa-solid fa-arrow-right"></i> Dentro de la instalación
+                        </span>
+                        {% elif r.tipoMovimiento == 'Ingreso' %}
+                        <span style="background-color: #28a745; color: white; padding: 5px 10px;
+                                     border-radius: 4px; display: inline-block;">
+                            <i class="fa-solid fa-arrow-right"></i> Dentro de la instalación
+                        </span>
+                        {% elif r.tipoMovimiento == 'Salida' %}
+                        <span style="background-color: #dc3545; color: white; padding: 5px 10px;
+                                     border-radius: 4px; display: inline-block;">
+                            <i class="fa-solid fa-arrow-left"></i> Fuera de la instalación
+                        </span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- NO HAY DATOS -->
+    {% if not visitantes and not registrosManual %}
+    <div class="no-data-message">
+        <i class="fa-solid fa-inbox" style="font-size: 32px; color: #ccc; margin-bottom: 10px;"></i><br>
+        <strong>No hay registros</strong><br>
+        <a href="{% url 'vigilante:registrar_invitados' %}" class="btn primary-btn">
+            <i class="fa-solid fa-user-plus"></i> Registrar Invitado
+        </a>
+    </div>
+    {% endif %}
+
+    {% if totalPages > 1 %}
+    <div class="paginacion">
+        {% for i in pageNumbers %}
+        <a href="{% url 'vigilante:historial_registro' %}?page={{ i|add:1 }}"
+           class="{% if i == currentPage %}active{% endif %}">
+            {{ i|add:1 }}
+        </a>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+{% endblock %}

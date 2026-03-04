@@ -1,0 +1,244 @@
+{% extends "layouts/mainV.html" %}
+{% load static %}
+
+{% block title %}Mi Perfil - Vigilante{% endblock %}
+
+{% block extraHead %}
+    <style>
+        .perfil-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .perfil-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .perfil-header h1 {
+            font-size: 32px;
+            color: #00b894;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .perfil-content {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .perfil-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .info-column {
+            display: flex;
+            gap: 15px;
+        }
+
+        .info-border {
+            width: 4px;
+            background: linear-gradient(180deg, #00b894 0%, #009174 100%);
+            border-radius: 2px;
+        }
+
+        .info-group {
+            flex: 1;
+        }
+
+        .info-item {
+            margin-bottom: 20px;
+        }
+
+        .info-label {
+            font-size: 13px;
+            font-weight: 700;
+            color: #222;
+            margin-bottom: 4px;
+        }
+
+        .info-value {
+            font-size: 15px;
+            color: #555;
+        }
+
+        .perfil-actions {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .btn-cambiar-foto {
+            background: linear-gradient(135deg, #00b894 0%, #009174 100%);
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 8px rgba(0, 184, 148, 0.3);
+        }
+
+        .btn-cambiar-foto:hover {
+            background: linear-gradient(135deg, #009174 0%, #007a5e 100%);
+            box-shadow: 0 6px 12px rgba(0, 184, 148, 0.4);
+            transform: translateY(-2px);
+        }
+
+        #profileForm {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .perfil-info {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .perfil-header h1 {
+                font-size: 24px;
+            }
+
+            .perfil-content {
+                padding: 20px;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="perfil-container">
+
+        <!-- Header -->
+        <div class="perfil-header">
+            <h1>Mi Perfil</h1>
+        </div>
+
+        <!-- Alertas -->
+        {% if request.GET.success %}
+        <div class="alert alert-success" role="alert">
+            <i class="fas fa-check-circle"></i>
+            <span>Foto de perfil actualizada correctamente</span>
+        </div>
+        {% endif %}
+
+        {% if request.GET.error %}
+        <div class="alert alert-danger" role="alert">
+            <i class="fas fa-exclamation-circle"></i>
+            <span>{{ request.GET.error }}</span>
+        </div>
+        {% endif %}
+
+        <!-- Contenido Principal -->
+        <div class="perfil-content">
+
+            <!-- Información del Perfil en dos columnas -->
+            <div class="perfil-info">
+                <!-- Columna 1 -->
+                <div class="info-column">
+                    <div class="info-border"></div>
+                    <div class="info-group">
+                        <div class="info-item">
+                            <div class="info-label">Nombre Completo:</div>
+                            <div class="info-value">{{ usuario.nombre }} {{ usuario.apellido }}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Correo Electrónico:</div>
+                            <div class="info-value">{{ usuario.correo }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Columna 2 -->
+                <div class="info-column">
+                    <div class="info-border"></div>
+                    <div class="info-group">
+                        <div class="info-item">
+                            <div class="info-label">Rol:</div>
+                            <div class="info-value">Vigilante</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Teléfono:</div>
+                            <div class="info-value">{{ usuario.telefono|default:'No registrado' }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botón para cambiar foto -->
+            <div class="perfil-actions">
+                <button class="btn-cambiar-foto" type="button"
+                        onclick="document.getElementById('foto_perfil').click()">
+                    <i class="fas fa-camera"></i>
+                    <span>Cambiar Foto de Perfil</span>
+                </button>
+            </div>
+
+        </div>
+
+        <!-- Formulario oculto para subir foto -->
+        <form id="profileForm"
+              action="{% url 'vigilante:actualizar_foto_perfil' %}"
+              method="POST"
+              enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="file" name="foto_perfil" id="foto_perfil"
+                   accept="image/*">
+        </form>
+
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const fileInput = document.getElementById('foto_perfil');
+
+            if (!fileInput) return;
+
+            fileInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
+                    const maxSize = 5 * 1024 * 1024;
+
+                    if (!validTypes.includes(file.type)) {
+                        alert('Por favor seleccione una imagen (JPEG, PNG, JPG, GIF)');
+                        fileInput.value = '';
+                        return false;
+                    }
+
+                    if (file.size > maxSize) {
+                        alert('La imagen no debe superar los 5MB');
+                        fileInput.value = '';
+                        return false;
+                    }
+
+                    const uploadBtn = document.querySelector('.btn-cambiar-foto');
+                    if (uploadBtn) {
+                        const originalText = uploadBtn.innerHTML;
+                        uploadBtn.innerHTML =
+                            '<i class="fas fa-spinner fa-spin"></i><span>Subiendo...</span>';
+                        uploadBtn.disabled = true;
+
+                        document.getElementById('profileForm').submit();
+
+                        setTimeout(() => {
+                            uploadBtn.innerHTML = originalText;
+                            uploadBtn.disabled = false;
+                        }, 8000);
+                    }
+                }
+            });
+        });
+    </script>
+{% endblock %}

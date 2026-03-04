@@ -13,6 +13,9 @@ urlpatterns = [
 
     # Módulo 2: Acceso y Autenticación Dactilar
     path('acceso/', include('apps.acceso_autenticacion_dactilar.urls')),
+    
+    # Módulo 2B: Vigilante (con namespace vigilante)
+    path('vigilante/', include('apps.acceso_autenticacion_dactilar.urls_vigilante')),
 
     # Módulo 3: Gestión de Asistencia y Justificación
     path('asistencia/', include('apps.gestion_asistencia_justificacion.urls')),

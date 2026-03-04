@@ -1,0 +1,173 @@
+{% extends "layouts/mainV.html" %}
+{% load static %}
+
+{% block title %}Consultar Invitados - Vigilante{% endblock %}
+
+{% block extraHead %}
+    <!-- Si esta pantalla necesita CSS extra, va aquí -->
+    <!-- Ejemplo:
+    <link rel="stylesheet" href="{% static 'css/otra-cosa.css' %}">
+    -->
+{% endblock %}
+
+{% block content %}
+
+    <h2>Consultar Invitados</h2>
+
+    <p style="margin: 15px 0; color: #666; font-size: 14px;">
+        <i class="fa-solid fa-calendar-days"></i>
+        <strong>Fecha actual:</strong>
+        <span>{{ fechaHoy }}</span>
+        &nbsp;&nbsp;|&nbsp;&nbsp;
+        <i class="fa-solid fa-clock"></i>
+        <strong>Hora actual:</strong>
+        <span>{{ horaAhora }}</span>
+    </p>
+
+    <hr style="margin: 20px 0; border: none; border-top: 1px solid #e0e0e0;">
+
+    <!-- FILTRO DE BÚSQUEDA -->
+    <div class="filter-container">
+        <form action="{% url 'vigilante:consultar_invitados' %}"
+              method="get"
+              class="filter-form">
+
+            <div class="filter-group">
+                <label for="nombre">Nombre</label>
+                <input id="nombre" type="text" name="nombre" value="{{ request.GET.nombre }}">
+            </div>
+
+            <div class="filter-group">
+                <label for="cedula">Cédula</label>
+                <input id="cedula" type="text" name="cedula" value="{{ request.GET.cedula }}">
+            </div>
+
+            <div class="filter-group">
+                <label for="fechaDesde">Fecha desde</label>
+                <input id="fechaDesde" type="date" name="fechaDesde" value="{{ request.GET.fechaDesde }}">
+            </div>
+
+            <div class="filter-group">
+                <label for="fechaHasta">Fecha hasta</label>
+                <input id="fechaHasta" type="date" name="fechaHasta" value="{{ request.GET.fechaHasta }}">
+            </div>
+
+            <div class="filter-actions">
+                <button type="submit" class="btn primary-btn">
+                    <i class="fa-solid fa-magnifying-glass"></i> Buscar
+                </button>
+                <a href="{% url 'vigilante:consultar_invitados' %}" class="btn">
+                    <i class="fa-solid fa-rotate-left"></i> Limpiar
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- MENSAJES -->
+    {% if success %}
+    <div class="alerta alerta-exito">
+        <i class="fa-solid fa-circle-check"></i>
+        <span>{{ success }}</span>
+    </div>
+    {% endif %}
+
+    {% if error %}
+    <div class="alerta alerta-error">
+        <i class="fa-solid fa-circle-xmark"></i>
+        <span>{{ error }}</span>
+    </div>
+    {% endif %}
+
+    <!-- NO HAY DATOS -->
+    {% if not visitantes %}
+    <div class="no-data-message">
+        <i class="fa-solid fa-inbox"
+           style="font-size: 32px; color: #ccc; margin-bottom: 10px;"></i><br>
+        <strong>No hay visitantes registrados</strong> que coincidan con el filtro.<br>
+        <a href="{% url 'vigilante:registrar_invitados' %}"
+           class="btn primary-btn"
+           style="margin-top: 15px; display: inline-flex;">
+            <i class="fa-solid fa-user-plus"></i> Registrar Invitado
+        </a>
+    </div>
+    {% endif %}
+
+    <!-- TABLA -->
+    {% if visitantes %}
+    <div class="table-container">
+        <table class="styled-table">
+            <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>Cédula</th>
+                <th>Motivo</th>
+                <th>Fecha</th>
+                <th>Hora Entrada</th>
+                <th>Hora Salida</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for v in visitantes %}
+            <tr>
+                <td>{{ v.nombre }}</td>
+                <td>{{ v.apellido }}</td>
+                <td>{{ v.cedula }}</td>
+                <td>{{ v.motivo }}</td>
+
+                <td>{{ v.asistenciaSede.fecha|default:'-' }}</td>
+                <td>{{ v.asistenciaSede.horaEntrada|default:'-' }}</td>
+                <td>{% if v.asistenciaSede and v.asistenciaSede.horaSalida %}{{ v.asistenciaSede.horaSalida }}{% else %}---{% endif %}</td>
+
+                <td>
+                    {% if v.asistenciaSede and not v.asistenciaSede.horaSalida %}
+                    <span class="estado-asistencia presente">
+                        <i class="fa-solid fa-check-circle"></i> En las instalaciones
+                    </span>
+                    {% else %}
+                    <span class="estado-asistencia ausente">
+                        <i class="fa-solid fa-times-circle"></i> Fuera de las instalaciones
+                    </span>
+                    {% endif %}
+                </td>
+
+                <td>
+                    {% if v.asistenciaSede and v.asistenciaSede.horaSalida %}
+                    <span>
+                        <i class="fa-solid fa-check"></i> Salida registrada
+                    </span>
+                    {% elif v.asistenciaSede and not v.asistenciaSede.horaSalida %}
+                    <form action="{% url 'vigilante:salida_invitado' v.id %}"
+                          method="post"
+                          style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn primary-btn"
+                                style="padding:8px 12px; font-size: 12px;">
+                            <i class="fa-solid fa-door-open"></i> Registrar salida
+                        </button>
+                    </form>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+
+    <!-- PAGINACIÓN -->
+    {% if totalPages > 1 %}
+    <div class="paginacion">
+        {% for i in pageNumbers %}
+        <a href="{% url 'vigilante:consultar_invitados' %}?page={{ i|add:1 }}&nombre={{ request.GET.nombre }}&cedula={{ request.GET.cedula }}&fechaDesde={{ request.GET.fechaDesde }}&fechaHasta={{ request.GET.fechaHasta }}"
+           class="{% if i == currentPage %}active{% endif %}">
+            {{ i|add:1 }}
+        </a>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+{% endblock %}
+
