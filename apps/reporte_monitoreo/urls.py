@@ -27,4 +27,11 @@ urlpatterns = [
     path('crear-novedad/', views.crear_novedad, name='crear_novedad_alt'),
     path('justificaciones/', views.justificaciones, name='justificaciones_alt'),
     path('mi-perfil/', views.mi_perfil, name='mi_perfil_alt'),
+    
+    # ===== API NOVEDADES =====
+    path('api/novedades/', views.api_listar_novedades, name='api_listar_novedades'),
+    path('api/novedades/crear/', views.api_crear_novedad, name='api_crear_novedad'),
+    path('api/novedades/<int:pk>/', views.api_novedad_detalle, name='api_novedad_detalle'),
+    path('api/fichas/', views.api_listar_fichas, name='api_listar_fichas'),
+    path('api/instructores/', views.api_listar_instructores, name='api_listar_instructores'),
 ]
