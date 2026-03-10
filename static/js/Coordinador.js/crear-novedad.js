@@ -4,84 +4,9 @@
    ===================================================== */
 
 // =====================================================
-// DATOS DE EJEMPLO
+// VARIABLES GLOBALES
 // =====================================================
-let novedadesData = [
-    {
-        id: 1,
-        fecha: '2026-02-21',
-        ficha: '2654123',
-        titulo: 'Falla en equipos de cómputo',
-        descripcion: 'Los computadores del ambiente 301 presentan fallas al encender. Se requiere revisión técnica urgente.',
-        respuesta: 'Se programó revisión técnica para el día 23',
-        instructor: 'Carlos Pérez',
-        tipo: 'Urgente',
-        estado: 'Pendiente',
-        archivo: 'reporte_falla.pdf'
-    },
-    {
-        id: 2,
-        fecha: '2026-02-20',
-        ficha: '2654124',
-        titulo: 'Cambio de horario solicitado',
-        descripcion: 'El grupo solicita cambio de jornada de mañana a tarde por motivos de transporte.',
-        respuesta: null,
-        instructor: 'María López',
-        tipo: 'Aviso',
-        estado: 'En proceso',
-        archivo: null
-    },
-    {
-        id: 3,
-        fecha: '2026-02-19',
-        ficha: '2654125',
-        titulo: 'Inasistencia masiva por paro',
-        descripcion: 'Grupo completo no pudo asistir debido al paro de transporte en la zona norte.',
-        respuesta: 'Justificación aprobada por coordinación',
-        instructor: 'Juan García',
-        tipo: 'Incidencia',
-        estado: 'Resuelto',
-        archivo: 'justificacion_paro.pdf'
-    },
-    {
-        id: 4,
-        fecha: '2026-02-18',
-        ficha: '2654123',
-        titulo: 'Proyector dañado',
-        descripcion: 'El proyector del ambiente presenta imagen borrosa y no proyecta correctamente.',
-        respuesta: null,
-        instructor: 'Carlos Pérez',
-        tipo: 'Incidencia',
-        estado: 'Pendiente',
-        archivo: null
-    },
-    {
-        id: 5,
-        fecha: '2026-02-17',
-        ficha: '2654126',
-        titulo: 'Conflicto entre aprendices',
-        descripcion: 'Se presentó un altercado verbal entre dos aprendices durante la formación.',
-        respuesta: 'Caso remitido a bienestar al aprendiz',
-        instructor: 'Ana Martínez',
-        tipo: 'Urgente',
-        estado: 'En proceso',
-        archivo: 'acta_hechos.pdf'
-    },
-    {
-        id: 6,
-        fecha: '2026-02-16',
-        ficha: '2654127',
-        titulo: 'Solicitud de materiales',
-        descripcion: 'Se requieren materiales adicionales para el proyecto final del trimestre.',
-        respuesta: 'Materiales entregados el 18/02',
-        instructor: 'Pedro Sánchez',
-        tipo: 'Aviso',
-        estado: 'Resuelto',
-        archivo: 'lista_materiales.xlsx'
-    }
-];
-
-// Novedad seleccionada para editar/ver
+let novedadesData = [];
 let novedadSeleccionada = null;
 let modoEdicion = false;
 
@@ -92,11 +17,80 @@ document.addEventListener('DOMContentLoaded', function() {
     initSidebarToggle();
     initUserDropdown();
     initKPIs();
-    renderTabla();
+    cargarNovedades();
+    cargarFichas();
+    cargarInstructores();
     initFiltros();
     initModal();
     initToastContainer();
 });
+
+// =====================================================
+// CARGAR DATOS DESDE EL SERVIDOR
+// =====================================================
+async function cargarNovedades() {
+    try {
+        const response = await fetch('/api/novedades/');
+        const data = await response.json();
+        
+        if (data.success) {
+            novedadesData = data.novedades;
+            renderTabla();
+            if (data.stats) {
+                actualizarKPIsConDatos(data.stats);
+            }
+        } else {
+            mostrarToast('error', 'Error', 'No se pudieron cargar las novedades');
+        }
+    } catch (error) {
+        console.error('Error al cargar novedades:', error);
+        mostrarToast('error', 'Error', 'Error de conexión con el servidor');
+    }
+}
+
+async function cargarFichas() {
+    try {
+        const response = await fetch('/api/fichas/');
+        const data = await response.json();
+        
+        if (data.success) {
+            const selectFicha = document.querySelector('[name="ficha"]');
+            if (selectFicha) {
+                selectFicha.innerHTML = '<option value="">Seleccionar ficha...</option>';
+                data.fichas.forEach(ficha => {
+                    const option = document.createElement('option');
+                    option.value = ficha.id;
+                    option.textContent = `${ficha.numero}${ficha.programa ? ' - ' + ficha.programa : ''}`;
+                    selectFicha.appendChild(option);
+                });
+            }
+        }
+    } catch (error) {
+        console.error('Error al cargar fichas:', error);
+    }
+}
+
+async function cargarInstructores() {
+    try {
+        const response = await fetch('/api/instructores/');
+        const data = await response.json();
+        
+        if (data.success) {
+            const selectInstructor = document.querySelector('[name="instructor"]');
+            if (selectInstructor) {
+                selectInstructor.innerHTML = '<option value="">Seleccionar instructor...</option>';
+                data.instructores.forEach(instructor => {
+                    const option = document.createElement('option');
+                    option.value = instructor.id;
+                    option.textContent = `${instructor.nombre}${instructor.cedula ? ' - ' + instructor.cedula : ''}`;
+                    selectInstructor.appendChild(option);
+                });
+            }
+        }
+    } catch (error) {
+        console.error('Error al cargar instructores:', error);
+    }
+}
 
 // =====================================================
 // KPIs
@@ -115,6 +109,13 @@ function actualizarKPIs() {
     animarNumero('kpiPendientes', pendientes);
     animarNumero('kpiProceso', enProceso);
     animarNumero('kpiResueltas', resueltas);
+}
+
+function actualizarKPIsConDatos(stats) {
+    animarNumero('kpiTotal', stats.total || 0);
+    animarNumero('kpiPendientes', stats.pendientes || 0);
+    animarNumero('kpiProceso', stats.enProceso || 0);
+    animarNumero('kpiResueltas', stats.resueltas || 0);
 }
 
 function animarNumero(elementId, valorFinal) {
@@ -422,8 +423,17 @@ function llenarFormulario(novedad) {
     const form = document.getElementById('formNovedad');
     if (!form) return;
 
-    form.querySelector('[name="ficha"]').value = novedad.ficha;
-    form.querySelector('[name="instructor"]').value = novedad.instructor;
+    // Usar IDs de la base de datos
+    const fichaSelect = form.querySelector('[name="ficha"]');
+    if (fichaSelect && novedad.id_ficha) {
+        fichaSelect.value = novedad.id_ficha;
+    }
+    
+    const instructorSelect = form.querySelector('[name="instructor"]');
+    if (instructorSelect && novedad.id_instructor) {
+        instructorSelect.value = novedad.id_instructor;
+    }
+    
     form.querySelector('[name="titulo"]').value = novedad.titulo;
     form.querySelector('[name="descripcion"]').value = novedad.descripcion;
     form.querySelector('[name="tipo"]').value = novedad.tipo;
@@ -468,10 +478,17 @@ function cerrarModal() {
     }
 }
 
-function guardarNovedad(e) {
+async function guardarNovedad(e) {
     e.preventDefault();
 
     const form = e.target;
+    const btnGuardar = document.getElementById('novModalSave');
+    
+    // Deshabilitar botón mientras se procesa
+    if (btnGuardar) {
+        btnGuardar.disabled = true;
+        btnGuardar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+    }
     
     // Obtener archivo adjunto
     const archivoInput = form.querySelector('[name="archivo"]');
@@ -482,48 +499,69 @@ function guardarNovedad(e) {
     
     // Obtener respuesta
     const respuestaField = form.querySelector('[name="respuesta"]');
-    const respuesta = respuestaField ? respuestaField.value.trim() : null;
+    const respuesta = respuestaField ? respuestaField.value.trim() : '';
     
     const datos = {
-        ficha: form.querySelector('[name="ficha"]').value,
-        instructor: form.querySelector('[name="instructor"]').value,
+        id_ficha: form.querySelector('[name="ficha"]').value || null,
+        id_instructor: form.querySelector('[name="instructor"]').value,
         titulo: form.querySelector('[name="titulo"]').value,
         descripcion: form.querySelector('[name="descripcion"]').value,
         tipo: form.querySelector('[name="tipo"]').value,
         estado: form.querySelector('[name="estado"]').value,
-        respuesta: respuesta || null,
-        fecha: new Date().toISOString().split('T')[0]
+        respuesta: respuesta || '',
+        archivo: archivoNombre || ''
     };
-    
-    // Agregar archivo si se seleccionó uno nuevo
-    if (archivoNombre) {
-        datos.archivo = archivoNombre;
-    }
 
-    if (modoEdicion && novedadSeleccionada) {
-        // Actualizar existente - mantener archivo anterior si no se subió uno nuevo
-        const index = novedadesData.findIndex(n => n.id === novedadSeleccionada.id);
-        if (index !== -1) {
-            if (!archivoNombre) {
-                datos.archivo = novedadesData[index].archivo;
+    try {
+        if (modoEdicion && novedadSeleccionada) {
+            // Actualizar existente
+            const response = await fetch(`/api/novedades/${novedadSeleccionada.id}/`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(datos)
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                mostrarToast('success', 'Novedad actualizada', 'Los cambios se guardaron correctamente');
+                await cargarNovedades();
+                cerrarModal();
+            } else {
+                mostrarToast('error', 'Error', result.message || 'No se pudo actualizar la novedad');
             }
-            novedadesData[index] = { ...novedadesData[index], ...datos };
-            mostrarToast('success', 'Novedad actualizada', 'Los cambios se guardaron correctamente');
+        } else {
+            // Crear nueva
+            const response = await fetch('/api/novedades/crear/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(datos)
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                mostrarToast('success', 'Novedad creada', 'La novedad se registró correctamente');
+                await cargarNovedades();
+                cerrarModal();
+            } else {
+                mostrarToast('error', 'Error', result.message || 'No se pudo crear la novedad');
+            }
         }
-    } else {
-        // Crear nueva
-        const nuevaNovedad = {
-            id: Math.max(...novedadesData.map(n => n.id)) + 1,
-            ...datos,
-            archivo: archivoNombre
-        };
-        novedadesData.unshift(nuevaNovedad);
-        mostrarToast('success', 'Novedad creada', 'La novedad se registró correctamente');
+    } catch (error) {
+        console.error('Error al guardar novedad:', error);
+        mostrarToast('error', 'Error', 'Error de conexión con el servidor');
+    } finally {
+        // Rehabilitar botón
+        if (btnGuardar) {
+            btnGuardar.disabled = false;
+            btnGuardar.innerHTML = '<i class="fas fa-save"></i> Guardar';
+        }
     }
-
-    cerrarModal();
-    actualizarKPIs();
-    aplicarFiltros();
 }
 
 // =====================================================
@@ -538,11 +576,24 @@ function confirmarEliminar(id) {
     }
 }
 
-function eliminarNovedad(id) {
-    novedadesData = novedadesData.filter(n => n.id !== id);
-    mostrarToast('success', 'Novedad eliminada', 'La novedad se eliminó correctamente');
-    actualizarKPIs();
-    aplicarFiltros();
+async function eliminarNovedad(id) {
+    try {
+        const response = await fetch(`/api/novedades/${id}/`, {
+            method: 'DELETE'
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            mostrarToast('success', 'Novedad eliminada', 'La novedad se eliminó correctamente');
+            await cargarNovedades();
+        } else {
+            mostrarToast('error', 'Error', result.message || 'No se pudo eliminar la novedad');
+        }
+    } catch (error) {
+        console.error('Error al eliminar novedad:', error);
+        mostrarToast('error', 'Error', 'Error de conexión con el servidor');
+    }
 }
 
 // =====================================================
