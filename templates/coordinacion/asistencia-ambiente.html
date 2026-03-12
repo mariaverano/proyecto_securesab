@@ -71,10 +71,7 @@
                     <label><i class="fas fa-folder"></i> Filtrar por Ficha:</label>
                     <select id="asistenciaAmbienteFicha">
                         <option value="all">Todas las Fichas</option>
-                        <option value="3065834">3065834</option>
-                        <option value="2654123">2654123</option>
-                        <option value="2654124">2654124</option>
-                        <option value="2654125">2654125</option>
+                        <!-- Las fichas se cargan dinámicamente desde la base de datos -->
                     </select>
                 </div>
                 <div class="filter-group">
@@ -217,7 +214,7 @@
 
     <!-- Scripts -->
     <script src="{% static 'js/Coordinador.js/LogicaC.js' %}"></script>
-    <script src="{% static 'js/asistencia-ambiente.js' %}"></script>
+    <script src="{% static 'js/asistencia-ambiente.js' %}?v=2"></script>
     <script>
         initSidebarToggle();
         initUserDropdown();

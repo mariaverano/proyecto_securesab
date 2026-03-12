@@ -205,24 +205,16 @@
                     <div class="nov-form-grid">
                         <div class="nov-form-group">
                             <label><i class="fas fa-folder"></i> Ficha</label>
-                            <select name="ficha" required>
+                            <select name="id_ficha" required>
                                 <option value="">Seleccionar ficha...</option>
-                                <option value="2654123">2654123 - ADSO</option>
-                                <option value="2654124">2654124 - Redes</option>
-                                <option value="2654125">2654125 - Multimedia</option>
-                                <option value="2654126">2654126 - Contabilidad</option>
-                                <option value="2654127">2654127 - Mercadeo</option>
+                                <!-- Las fichas se cargan dinámicamente desde la base de datos -->
                             </select>
                         </div>
                         <div class="nov-form-group">
                             <label><i class="fas fa-chalkboard-teacher"></i> Instructor</label>
-                            <select name="instructor" required>
+                            <select name="id_instructor" required>
                                 <option value="">Seleccionar instructor...</option>
-                                <option value="Carlos Pérez">Carlos Pérez</option>
-                                <option value="María López">María López</option>
-                                <option value="Juan García">Juan García</option>
-                                <option value="Ana Martínez">Ana Martínez</option>
-                                <option value="Pedro Sánchez">Pedro Sánchez</option>
+                                <!-- Los instructores se cargan dinámicamente desde la base de datos -->
                             </select>
                         </div>
                         <div class="nov-form-group">
@@ -283,7 +275,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <script src="{% static 'js/Coordinador.js/LogicaC.js' %}?v=3"></script>
-    <script src="{% static 'js/Coordinador.js/crear-novedad.js' %}?v=5"></script>
+    <script src="{% static 'js/Coordinador.js/crear-novedad.js' %}?v=7"></script>
     <script>
         // User Dropdown
         const userMenuBtn = document.getElementById('userMenuBtn');

@@ -3,6 +3,9 @@
 // ========================================
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Cargar fichas desde la base de datos
+    cargarFichasDesdeAPI();
+
     // Referencias a elementos
     const tabla = document.getElementById('asistenciaAmbienteTabla');
     const filtroFicha = document.getElementById('asistenciaAmbienteFicha');
@@ -234,3 +237,36 @@ document.addEventListener('DOMContentLoaded', function() {
         filtroEstado.addEventListener('change', aplicarFiltros);
     }
 });
+
+// ========================================
+// Función para cargar fichas desde la API
+// ========================================
+async function cargarFichasDesdeAPI() {
+    console.log('🔄 Cargando fichas desde la base de datos...');
+    try {
+        const response = await fetch('/api/fichas/');
+        const data = await response.json();
+        
+        if (data.success && data.fichas) {
+            const selectFicha = document.getElementById('asistenciaAmbienteFicha');
+            if (selectFicha) {
+                // Mantener la opción "Todas las Fichas"
+                selectFicha.innerHTML = '<option value="all">Todas las Fichas</option>';
+                
+                // Agregar las fichas desde la base de datos
+                data.fichas.forEach(ficha => {
+                    const option = document.createElement('option');
+                    option.value = ficha.numero;
+                    option.textContent = ficha.numero + (ficha.programa ? ' - ' + ficha.programa : '');
+                    selectFicha.appendChild(option);
+                });
+                
+                console.log(`✅ ${data.fichas.length} fichas cargadas exitosamente`);
+            }
+        } else {
+            console.error('❌ Error en la respuesta de la API:', data.message || 'Sin mensaje');
+        }
+    } catch (error) {
+        console.error('❌ Error al cargar fichas desde la API:', error);
+    }
+}
