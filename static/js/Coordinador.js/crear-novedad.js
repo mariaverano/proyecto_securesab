@@ -49,12 +49,16 @@ async function cargarNovedades() {
 }
 
 async function cargarFichas() {
+    console.log('🔄 Cargando fichas desde la API...');
     try {
         const response = await fetch('/api/fichas/');
+        console.log('📡 Respuesta de fichas:', response.status);
         const data = await response.json();
+        console.log('📊 Datos de fichas:', data);
         
         if (data.success) {
-            const selectFicha = document.querySelector('[name="ficha"]');
+            const selectFicha = document.querySelector('[name="id_ficha"]');
+            console.log('🎯 Select ficha encontrado:', selectFicha);
             if (selectFicha) {
                 selectFicha.innerHTML = '<option value="">Seleccionar ficha...</option>';
                 data.fichas.forEach(ficha => {
@@ -63,20 +67,27 @@ async function cargarFichas() {
                     option.textContent = `${ficha.numero}${ficha.programa ? ' - ' + ficha.programa : ''}`;
                     selectFicha.appendChild(option);
                 });
+                console.log(`✅ ${data.fichas.length} fichas cargadas exitosamente`);
             }
+        } else {
+            console.error('❌ Error en la respuesta:', data.message);
         }
     } catch (error) {
-        console.error('Error al cargar fichas:', error);
+        console.error('❌ Error al cargar fichas:', error);
     }
 }
 
 async function cargarInstructores() {
+    console.log('🔄 Cargando instructores desde la API...');
     try {
         const response = await fetch('/api/instructores/');
+        console.log('📡 Respuesta de instructores:', response.status);
         const data = await response.json();
+        console.log('📊 Datos de instructores:', data);
         
         if (data.success) {
-            const selectInstructor = document.querySelector('[name="instructor"]');
+            const selectInstructor = document.querySelector('[name="id_instructor"]');
+            console.log('🎯 Select instructor encontrado:', selectInstructor);
             if (selectInstructor) {
                 selectInstructor.innerHTML = '<option value="">Seleccionar instructor...</option>';
                 data.instructores.forEach(instructor => {
@@ -85,10 +96,13 @@ async function cargarInstructores() {
                     option.textContent = `${instructor.nombre}${instructor.cedula ? ' - ' + instructor.cedula : ''}`;
                     selectInstructor.appendChild(option);
                 });
+                console.log(`✅ ${data.instructores.length} instructores cargados exitosamente`);
             }
+        } else {
+            console.error('❌ Error en la respuesta:', data.message);
         }
     } catch (error) {
-        console.error('Error al cargar instructores:', error);
+        console.error('❌ Error al cargar instructores:', error);
     }
 }
 
@@ -372,6 +386,10 @@ function abrirModalNueva() {
     if (titulo) titulo.textContent = 'Nueva Novedad';
     if (form) form.reset();
     
+    // Limpiar errores de validación
+    document.querySelectorAll('.error-message').forEach(el => el.remove());
+    document.querySelectorAll('.form-error').forEach(el => el.classList.remove('form-error'));
+    
     // Resetear label del archivo
     const fileLabel = document.querySelector('.nov-file-label span');
     if (fileLabel) {
@@ -424,12 +442,12 @@ function llenarFormulario(novedad) {
     if (!form) return;
 
     // Usar IDs de la base de datos
-    const fichaSelect = form.querySelector('[name="ficha"]');
+    const fichaSelect = form.querySelector('[name="id_ficha"]');
     if (fichaSelect && novedad.id_ficha) {
         fichaSelect.value = novedad.id_ficha;
     }
     
-    const instructorSelect = form.querySelector('[name="instructor"]');
+    const instructorSelect = form.querySelector('[name="id_instructor"]');
     if (instructorSelect && novedad.id_instructor) {
         instructorSelect.value = novedad.id_instructor;
     }
@@ -475,6 +493,10 @@ function cerrarModal() {
         novedadSeleccionada = null;
         modoEdicion = false;
         deshabilitarFormulario(false);
+        
+        // Limpiar errores de validación
+        document.querySelectorAll('.error-message').forEach(el => el.remove());
+        document.querySelectorAll('.form-error').forEach(el => el.classList.remove('form-error'));
     }
 }
 
@@ -502,8 +524,8 @@ async function guardarNovedad(e) {
     const respuesta = respuestaField ? respuestaField.value.trim() : '';
     
     const datos = {
-        id_ficha: form.querySelector('[name="ficha"]').value || null,
-        id_instructor: form.querySelector('[name="instructor"]').value,
+        id_ficha: form.querySelector('[name="id_ficha"]').value || null,
+        id_instructor: form.querySelector('[name="id_instructor"]').value,
         titulo: form.querySelector('[name="titulo"]').value,
         descripcion: form.querySelector('[name="descripcion"]').value,
         tipo: form.querySelector('[name="tipo"]').value,
@@ -530,7 +552,12 @@ async function guardarNovedad(e) {
                 await cargarNovedades();
                 cerrarModal();
             } else {
-                mostrarToast('error', 'Error', result.message || 'No se pudo actualizar la novedad');
+                // Manejar errores de validación
+                if (result.errors) {
+                    mostrarErroresValidacion(result.errors);
+                } else {
+                    mostrarToast('error', 'Error', result.message || 'No se pudo actualizar la novedad');
+                }
             }
         } else {
             // Crear nueva
@@ -549,7 +576,12 @@ async function guardarNovedad(e) {
                 await cargarNovedades();
                 cerrarModal();
             } else {
-                mostrarToast('error', 'Error', result.message || 'No se pudo crear la novedad');
+                // Manejar errores de validación
+                if (result.errors) {
+                    mostrarErroresValidacion(result.errors);
+                } else {
+                    mostrarToast('error', 'Error', result.message || 'No se pudo crear la novedad');
+                }
             }
         }
     } catch (error) {
@@ -605,6 +637,36 @@ function initToastContainer() {
         container.className = 'nov-toast-container';
         document.body.appendChild(container);
     }
+}
+
+// =====================================================
+// MOSTRAR ERRORES DE VALIDACIÓN
+// =====================================================
+function mostrarErroresValidacion(errors) {
+    // Limpiar errores previos
+    document.querySelectorAll('.error-message').forEach(el => el.remove());
+    document.querySelectorAll('.form-error').forEach(el => el.classList.remove('form-error'));
+    
+    if (!errors || Object.keys(errors).length === 0) return;
+    
+    // Mostrar errores para cada campo
+    for (const [field, messages] of Object.entries(errors)) {
+        const input = document.querySelector(`[name="${field}"]`);
+        if (input) {
+            input.classList.add('form-error');
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.style.color = '#e74c3c';
+            errorDiv.style.fontSize = '12px';
+            errorDiv.style.marginTop = '4px';
+            errorDiv.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${messages.join(', ')}`;
+            input.parentElement.appendChild(errorDiv);
+        }
+    }
+    
+    // Mostrar un toast general
+    const primerError = Object.values(errors)[0];
+    mostrarToast('error', 'Error de validación', primerError[0] || 'Por favor revisa los campos del formulario');
 }
 
 function mostrarToast(tipo, titulo, mensaje) {
